@@ -5,6 +5,7 @@ export type RootStackParamList = {
   MainTabs: undefined;
   MortgageCalculator: undefined;
   RepaymentPlan: { result: MortgageResult };
+  DepositCalculator: undefined;
   AllTools: undefined;
 };
 

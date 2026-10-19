@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { colors, fontSize, shadow, spacing } from '../theme/theme';
 import { TOOLS } from '../data/tools';
 import type { Tool } from '../types';
 import { ToolCard } from '../components/ToolCard';
@@ -23,8 +23,10 @@ export const HomeScreen: React.FC = () => {
   const { showToast } = useToast();
 
   const handleToolPress = (tool: Tool) => {
-    if (tool.implemented) {
+    if (tool.id === 'mortgage') {
       navigation.navigate('MortgageCalculator');
+    } else if (tool.id === 'deposit') {
+      navigation.navigate('DepositCalculator');
     } else {
       showToast(`「${tool.name}」即将上线，敬请期待`);
     }

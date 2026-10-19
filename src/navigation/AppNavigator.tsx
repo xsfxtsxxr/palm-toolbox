@@ -13,6 +13,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { AllToolsScreen } from '../screens/AllToolsScreen';
 import { MortgageCalculatorScreen } from '../screens/MortgageCalculatorScreen';
 import { RepaymentPlanScreen } from '../screens/RepaymentPlanScreen';
+import { DepositCalculatorScreen } from '../screens/DepositCalculatorScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -46,6 +47,11 @@ export const AppNavigator: React.FC = () => (
       <Stack.Screen
         name="RepaymentPlan"
         component={RepaymentPlanScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="DepositCalculator"
+        component={DepositCalculatorScreen}
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen

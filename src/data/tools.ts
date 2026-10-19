@@ -18,7 +18,7 @@ export const TOOLS: Tool[] = [
     subtitle: '利息收益',
     icon: 'deposit',
     tile: 'green',
-    implemented: false,
+    implemented: true,
   },
   {
     id: 'tax',
@@ -86,3 +86,18 @@ export const RATE_PRESETS = [
 
 /** 常用剩余期数预设（月） */
 export const PERIOD_PRESETS = [12, 24, 36, 60, 120, 180, 240, 300, 360];
+
+/**
+ * 常见人民币定期存款挂牌利率（%），仅作参考
+ * 各家银行、各期限、各起存金额的实际利率可能不同，以柜面/手机银行为准
+ */
+export const DEPOSIT_RATE_PRESETS: { label: string; rate: number }[] = [
+  { label: '三个月', rate: 0.65 },
+  { label: '六个月', rate: 0.85 },
+  { label: '一年期', rate: 0.95 },
+  { label: '二年期', rate: 1.05 },
+  { label: '三年期', rate: 1.25 },
+  { label: '五年期', rate: 1.30 },
+  { label: '特色存款', rate: 1.55 },
+  { label: '大额存单', rate: 1.75 },
+];

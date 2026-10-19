@@ -1,5 +1,5 @@
 /**
- * 首次还款日期选择器（年 + 月）
+ * 日期选择器（年 + 月 + 日），默认用于「首次还款日期」
  */
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -14,13 +14,28 @@ interface Props {
   day: number;
   onClose: () => void;
   onConfirm: (year: number, month: number, day: number) => void;
+  /** 弹窗标题 */
+  title?: string;
+  /** 底部提示文案 */
+  tip?: string;
+  minYear?: number;
+  maxYear?: number;
 }
 
-const MIN_YEAR = 2015;
-const MAX_YEAR = 2045;
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, day, onClose, onConfirm }) => {
+export const MonthPickerModal: React.FC<Props> = ({
+  visible,
+  year,
+  month,
+  day,
+  onClose,
+  onConfirm,
+  title = '选择首次还款日期',
+  tip = '首次还款日期指提前还款后的下一扣款日',
+  minYear = 2015,
+  maxYear = 2045,
+}) => {
   const [pickedYear, setPickedYear] = useState(year);
   const [pickedMonth, setPickedMonth] = useState(month);
   const [pickedDay, setPickedDay] = useState(day);
@@ -33,7 +48,7 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, day, o
   return (
     <PickerModal
       visible={visible}
-      title="选择首次还款日期"
+      title={title}
       onClose={onClose}
       footer={
         <>
@@ -50,27 +65,27 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, day, o
         <Pressable
           accessibilityRole="button"
           hitSlop={10}
-          disabled={pickedYear <= MIN_YEAR}
+          disabled={pickedYear <= minYear}
           onPress={() => {
-            const nextYear = Math.max(MIN_YEAR, pickedYear - 1);
+            const nextYear = Math.max(minYear, pickedYear - 1);
             setPickedYear(nextYear);
             setPickedDay((value) => Math.min(value, new Date(nextYear, pickedMonth, 0).getDate()));
           }}
         >
-          <ChevronLeftIcon size={20} color={pickedYear <= MIN_YEAR ? colors.textPlaceholder : colors.text} />
+          <ChevronLeftIcon size={20} color={pickedYear <= minYear ? colors.textPlaceholder : colors.text} />
         </Pressable>
         <Text style={styles.yearText}>{pickedYear} 年</Text>
         <Pressable
           accessibilityRole="button"
           hitSlop={10}
-          disabled={pickedYear >= MAX_YEAR}
+          disabled={pickedYear >= maxYear}
           onPress={() => {
-            const nextYear = Math.min(MAX_YEAR, pickedYear + 1);
+            const nextYear = Math.min(maxYear, pickedYear + 1);
             setPickedYear(nextYear);
             setPickedDay((value) => Math.min(value, new Date(nextYear, pickedMonth, 0).getDate()));
           }}
         >
-          <ChevronRightIcon size={20} color={pickedYear >= MAX_YEAR ? colors.textPlaceholder : colors.text} />
+          <ChevronRightIcon size={20} color={pickedYear >= maxYear ? colors.textPlaceholder : colors.text} />
         </Pressable>
       </View>
 
@@ -111,7 +126,7 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, day, o
         </View>
       </ScrollView>
 
-      <Text style={styles.tip}>首次还款日期指提前还款后的下一扣款日</Text>
+      <Text style={styles.tip}>{tip}</Text>
     </PickerModal>
   );
 };

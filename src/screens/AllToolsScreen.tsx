@@ -8,6 +8,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fontSize, radius, shadow, spacing, tileThemes } from '../theme/theme';
 import { TOOLS } from '../data/tools';
+import type { Tool } from '../types';
 import { useToast } from '../components/Toast';
 import { ToolIcon } from '../components/icons/ToolIcons';
 import { BackIcon, ChevronRightIcon } from '../components/icons/UIIcons';
@@ -20,11 +21,13 @@ export const AllToolsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
 
-  const handlePress = (toolId: string, toolName: string, implemented: boolean) => {
-    if (implemented) {
+  const handlePress = (tool: Tool) => {
+    if (tool.id === 'mortgage') {
       navigation.navigate('MortgageCalculator');
+    } else if (tool.id === 'deposit') {
+      navigation.navigate('DepositCalculator');
     } else {
-      showToast(`「${toolName}」即将上线，敬请期待`);
+      showToast(`「${tool.name}」即将上线，敬请期待`);
     }
   };
 
@@ -47,7 +50,7 @@ export const AllToolsScreen: React.FC = () => {
               key={tool.id}
               accessibilityRole="button"
               style={({ pressed }) => [styles.row, shadow.card, pressed && styles.pressed]}
-              onPress={() => handlePress(tool.id, tool.name, tool.implemented)}
+              onPress={() => handlePress(tool)}
             >
               <View style={[styles.tile, { backgroundColor: tile.bg }]}>
                 <ToolIcon name={tool.icon} size={24} color={tile.color} />

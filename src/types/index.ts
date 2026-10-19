@@ -17,7 +17,7 @@ export interface Tool {
   subtitle: string;
   icon: ToolIconName;
   tile: 'blue' | 'green' | 'orange' | 'teal' | 'purple' | 'coral' | 'indigo' | 'red';
-  /** 是否已实现（当前仅房贷计算器已上线） */
+  /** 是否已实现（房贷 / 存款计算器已上线） */
   implemented: boolean;
   hot?: boolean;
 }

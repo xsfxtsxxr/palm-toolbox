@@ -12,6 +12,33 @@ export function fmtYuan(value: number): string {
   return '¥' + fmtMoney(value);
 }
 
+/** 金额格式化为保留小数位 + 千分位，如 2310.68 -> "2,310.68" */
+export function fmtDecimal(value: number, digits = 2): string {
+  const sign = value < 0 ? '-' : '';
+  const [intPart, decPart] = Math.abs(value).toFixed(digits).split('.');
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return sign + (decPart ? `${grouped}.${decPart}` : grouped);
+}
+
+/** 金额格式化为 "¥2,310.68" 形式 */
+export function fmtYuanDecimal(value: number, digits = 2): string {
+  return '¥' + fmtDecimal(value, digits);
+}
+
+/** 日期格式化为 "2026-01-01" */
+export function fmtDateISO(year: number, month: number, day: number): string {
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/** 利率输入清洗：仅保留数字与一个小数点 */
+export function sanitizeRateInput(raw: string, maxLength = 5): string {
+  const cleaned = raw.replace(/[^\d.]/g, '');
+  const dot = cleaned.indexOf('.');
+  const normalized =
+    dot < 0 ? cleaned : cleaned.slice(0, dot + 1) + cleaned.slice(dot + 1).replace(/\./g, '');
+  return normalized.slice(0, maxLength);
+}
+
 /** 输入框金额：仅保留数字并加千分位 */
 export function fmtAmountInput(raw: string): string {
   const digits = raw.replace(/\D/g, '').slice(0, 12);
