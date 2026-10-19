@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "掌中工具箱",
+    "slug": "xsfxtsxxrxfy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "palmtoolbox",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.palmtoolbox.app"
+    },
+    "android": {
+      "package": "com.palmtoolbox.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "ba62881c-2bdb-49e3-a510-32ce354fefad"
+      }
+    },
+    "owner": "xsfxtsxxrxfys-team"
+  }
+}
