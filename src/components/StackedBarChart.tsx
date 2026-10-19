@@ -82,7 +82,7 @@ export const StackedBarChart: React.FC<Props> = ({ rows }) => {
       <View style={styles.axisRow}>
         {data.map((row) => (
           <Text key={row.period} style={styles.axisLabel} numberOfLines={1}>
-            {row.yearMonth.split('.')[1]}月
+            {row.paymentDate.split('.')[1]}月
           </Text>
         ))}
       </View>

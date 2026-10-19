@@ -14,7 +14,7 @@ interface Props {
   previewCount?: number;
 }
 
-const COLUMNS = ['期数', '月供总额', '月供本金', '月供利息', '剩余总额'];
+const COLUMNS = ['还款日', '月供总额', '月供本金', '月供利息', '剩余总额'];
 
 export const AmortizationTable: React.FC<Props> = ({ rows, previewCount = 12 }) => {
   const [expanded, setExpanded] = useState(false);
@@ -43,7 +43,7 @@ export const AmortizationTable: React.FC<Props> = ({ rows, previewCount = 12 }) 
               key={row.period}
               style={[styles.row, index % 2 === 1 ? styles.zebra : null]}
             >
-              <Text style={[styles.cell, styles.periodCell, styles.periodText]}>{row.yearMonth}</Text>
+              <Text style={[styles.cell, styles.periodCell, styles.periodText]}>{row.paymentDate}</Text>
               <Text style={styles.cell}>{fmtMoney(row.payment)}</Text>
               <Text style={styles.cell}>{fmtMoney(row.principal)}</Text>
               <Text style={styles.cell}>{fmtMoney(row.interest)}</Text>
@@ -58,7 +58,7 @@ export const AmortizationTable: React.FC<Props> = ({ rows, previewCount = 12 }) 
               key={row.period}
               style={[styles.row, index % 2 === 1 ? styles.zebra : null]}
             >
-              <Text style={[styles.cell, styles.periodCell, styles.periodText]}>{row.yearMonth}</Text>
+              <Text style={[styles.cell, styles.periodCell, styles.periodText]}>{row.paymentDate}</Text>
               <Text style={styles.cell}>{fmtMoney(row.payment)}</Text>
               <Text style={styles.cell}>{fmtMoney(row.principal)}</Text>
               <Text style={styles.cell}>{fmtMoney(row.interest)}</Text>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   periodCell: {
-    width: 58,
+    width: 72,
     flex: 0,
     textAlign: 'left',
     paddingLeft: 6,

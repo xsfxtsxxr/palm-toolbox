@@ -33,6 +33,16 @@ export function monthLabel(year: number, month: number, offset: number): string 
   return `${y}.${String(m).padStart(2, '0')}`;
 }
 
+/** 还款日期标签：首期年月日 + 月份偏移，短月份按月末还款 */
+export function paymentDateLabel(year: number, month: number, day: number, offset: number): string {
+  const total = year * 12 + (month - 1) + offset;
+  const targetYear = Math.floor(total / 12);
+  const targetMonth = (total % 12) + 1;
+  const lastDay = new Date(targetYear, targetMonth, 0).getDate();
+  const targetDay = Math.min(day, lastDay);
+  return `${targetYear}.${String(targetMonth).padStart(2, '0')}.${String(targetDay).padStart(2, '0')}`;
+}
+
 /** 当前年月 */
 export function currentYearMonth(): { year: number; month: number } {
   const now = new Date();

@@ -3,6 +3,8 @@ import {
   annuityPayment,
   buildSchedule,
   calcMortgage,
+  getNextPaymentDate,
+  getRemainingPaymentInfo,
   termFor,
   validateInput,
 } from './mortgage';
@@ -12,6 +14,8 @@ const baseInput = {
   prepayAmount: 120_000,
   firstPaymentYear: 2026,
   firstPaymentMonth: 11,
+  firstPaymentDay: 15,
+  totalMonths: 360,
   annualRate: 4.9,
   remainingMonths: 360,
   mode: 'reducePayment' as const,
@@ -40,16 +44,16 @@ describe('termFor 反解期数', () => {
 
 describe('buildSchedule 还款计划表', () => {
   it('末期剩余本金归零', () => {
-    const rows = buildSchedule(1_000_000, 0.049 / 12, 5307.27, 2026, 11, 360);
+    const rows = buildSchedule(1_000_000, 0.049 / 12, 5307.27, 2026, 11, 15, 360);
     expect(rows).toHaveLength(360);
     expect(rows[359].balance).toBeLessThan(0.01);
-    expect(rows[0].yearMonth).toBe('2026.11');
-    expect(rows[1].yearMonth).toBe('2026.12');
-    expect(rows[11].yearMonth).toBe('2027.10');
+    expect(rows[0].paymentDate).toBe('2026.11.15');
+    expect(rows[1].paymentDate).toBe('2026.12.15');
+    expect(rows[11].paymentDate).toBe('2027.10.15');
   });
 
   it('总还款 - 本金 = 总利息', () => {
-    const rows = buildSchedule(1_000_000, 0.049 / 12, 5307.27, 2026, 11, 360);
+    const rows = buildSchedule(1_000_000, 0.049 / 12, 5307.27, 2026, 11, 15, 360);
     const totalPaid = rows.reduce((a, r) => a + r.payment, 0);
     const totalInterest = rows.reduce((a, r) => a + r.interest, 0);
     expect(totalPaid - 1_000_000).toBeCloseTo(totalInterest, 4);
@@ -95,6 +99,32 @@ describe('calcMortgage 提前还款测算', () => {
     expect(result.originalMonthlyPayment).toBeCloseTo(1_000_000 / 120, 6);
     expect(result.newMonthlyPayment).toBeCloseTo(880_000 / 120, 6);
     expect(result.savedInterest).toBe(0);
+  });
+});
+
+describe('getRemainingPaymentInfo 最近还款日与剩余期数', () => {
+  const firstPayment = { year: 2026, month: 1, day: 15 };
+
+  it('扣款日当天仍从本月开始', () => {
+    expect(getNextPaymentDate(firstPayment, new Date(2026, 4, 15))).toEqual({ year: 2026, month: 5, day: 15 });
+    expect(getRemainingPaymentInfo(firstPayment, 360, new Date(2026, 4, 15)).remainingMonths).toBe(356);
+  });
+
+  it('超过本月扣款日后从下月开始并扣除已过期数', () => {
+    expect(getRemainingPaymentInfo(firstPayment, 360, new Date(2026, 4, 16))).toEqual({
+      year: 2026,
+      month: 6,
+      day: 15,
+      remainingMonths: 355,
+    });
+  });
+
+  it('短月份按月末生成扣款日', () => {
+    expect(getNextPaymentDate({ year: 2026, month: 1, day: 31 }, new Date(2026, 1, 1))).toEqual({
+      year: 2026,
+      month: 2,
+      day: 28,
+    });
   });
 });
 

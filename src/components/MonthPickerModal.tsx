@@ -2,7 +2,7 @@
  * 首次还款日期选择器（年 + 月）
  */
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fontSize, radius, spacing } from '../theme/theme';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons/UIIcons';
 import { PickerModal } from './PickerModal';
@@ -11,20 +11,22 @@ interface Props {
   visible: boolean;
   year: number;
   month: number;
+  day: number;
   onClose: () => void;
-  onConfirm: (year: number, month: number) => void;
+  onConfirm: (year: number, month: number, day: number) => void;
 }
 
 const MIN_YEAR = 2015;
 const MAX_YEAR = 2045;
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, onClose, onConfirm }) => {
+export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, day, onClose, onConfirm }) => {
   const [pickedYear, setPickedYear] = useState(year);
   const [pickedMonth, setPickedMonth] = useState(month);
+  const [pickedDay, setPickedDay] = useState(day);
 
   const handleConfirm = () => {
-    onConfirm(pickedYear, pickedMonth);
+    onConfirm(pickedYear, pickedMonth, pickedDay);
     onClose();
   };
 
@@ -49,7 +51,11 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, onClos
           accessibilityRole="button"
           hitSlop={10}
           disabled={pickedYear <= MIN_YEAR}
-          onPress={() => setPickedYear((y) => Math.max(MIN_YEAR, y - 1))}
+          onPress={() => {
+            const nextYear = Math.max(MIN_YEAR, pickedYear - 1);
+            setPickedYear(nextYear);
+            setPickedDay((value) => Math.min(value, new Date(nextYear, pickedMonth, 0).getDate()));
+          }}
         >
           <ChevronLeftIcon size={20} color={pickedYear <= MIN_YEAR ? colors.textPlaceholder : colors.text} />
         </Pressable>
@@ -58,7 +64,11 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, onClos
           accessibilityRole="button"
           hitSlop={10}
           disabled={pickedYear >= MAX_YEAR}
-          onPress={() => setPickedYear((y) => Math.min(MAX_YEAR, y + 1))}
+          onPress={() => {
+            const nextYear = Math.min(MAX_YEAR, pickedYear + 1);
+            setPickedYear(nextYear);
+            setPickedDay((value) => Math.min(value, new Date(nextYear, pickedMonth, 0).getDate()));
+          }}
         >
           <ChevronRightIcon size={20} color={pickedYear >= MAX_YEAR ? colors.textPlaceholder : colors.text} />
         </Pressable>
@@ -72,13 +82,34 @@ export const MonthPickerModal: React.FC<Props> = ({ visible, year, month, onClos
               key={m}
               accessibilityRole="button"
               style={[styles.chip, active && styles.chipActive]}
-              onPress={() => setPickedMonth(m)}
+              onPress={() => {
+                setPickedMonth(m);
+                setPickedDay((value) => Math.min(value, new Date(pickedYear, m, 0).getDate()));
+              }}
             >
               <Text style={[styles.chipText, active && styles.chipTextActive]}>{m} 月</Text>
             </Pressable>
           );
         })}
       </View>
+
+      <ScrollView style={styles.dayScroll} nestedScrollEnabled showsVerticalScrollIndicator={false}>
+        <View style={styles.dayGrid}>
+          {Array.from({ length: new Date(pickedYear, pickedMonth, 0).getDate() }, (_, index) => index + 1).map((d) => {
+            const active = d === pickedDay;
+            return (
+              <Pressable
+                key={d}
+                accessibilityRole="button"
+                style={[styles.dayChip, active && styles.chipActive]}
+                onPress={() => setPickedDay(d)}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>{d} 日</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
 
       <Text style={styles.tip}>首次还款日期指提前还款后的下一扣款日</Text>
     </PickerModal>
@@ -105,6 +136,23 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
     marginTop: spacing.sm,
+  },
+  dayScroll: {
+    maxHeight: 230,
+    marginTop: spacing.md,
+  },
+  dayGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  dayChip: {
+    width: '31%',
+    height: 28,
+    borderRadius: radius.sm,
+    backgroundColor: '#F2F4F8',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chip: {
     width: '31%',

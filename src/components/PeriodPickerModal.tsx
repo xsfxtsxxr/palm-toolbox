@@ -67,10 +67,10 @@ export const PeriodPickerModal: React.FC<Props> = ({ visible, months, onClose, o
             const cleaned = text.replace(/\D/g, '').slice(0, 3);
             setCustom(cleaned);
             const value = parseInt(cleaned, 10);
-            if (!isNaN(value) && value > 0 && value <= 360) setPicked(value);
+            if (!isNaN(value) && value > 0 && value <= 600) setPicked(value);
           }}
           keyboardType="number-pad"
-          placeholder="输入期数（1-360）"
+          placeholder="输入期数（1-600）"
           placeholderTextColor={colors.textPlaceholder}
           maxLength={3}
         />

@@ -15,7 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
 import type { MortgageInput, PrepayMode } from '../types';
-import { calcMortgage, validateInput } from '../utils/mortgage';
+import { calcMortgage, getRemainingPaymentInfo, validateInput } from '../utils/mortgage';
 import { fmtAmountInput, fmtPercent, fmtYuan, formatYearMonthCN, nextYearMonth, parseAmount } from '../utils/format';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { MonthPickerModal } from '../components/MonthPickerModal';
@@ -47,8 +47,10 @@ export const MortgageCalculatorScreen: React.FC = () => {
   const [principalText, setPrincipalText] = useState('');
   const [prepayText, setPrepayText] = useState('');
   const [date, setDate] = useState(nextYearMonth);
+  const [paymentDay, setPaymentDay] = useState(15);
+  const [totalMonthsText, setTotalMonthsText] = useState('360');
   const [rate, setRate] = useState(4.9);
-  const [months, setMonths] = useState(360);
+  const [customMonths, setCustomMonths] = useState<number | null>(null);
   const [mode, setMode] = useState<PrepayMode>('reducePayment');
 
   const [monthPickerVisible, setMonthPickerVisible] = useState(false);
@@ -58,6 +60,12 @@ export const MortgageCalculatorScreen: React.FC = () => {
 
   const principal = parseAmount(principalText);
   const prepay = parseAmount(prepayText);
+  const totalMonths = parseInt(totalMonthsText, 10) || 0;
+  const autoPeriod = useMemo(
+    () => getRemainingPaymentInfo({ year: date.year, month: date.month, day: paymentDay }, totalMonths),
+    [date.year, date.month, paymentDay, totalMonths],
+  );
+  const months = customMonths ?? autoPeriod.remainingMonths;
   const valid = principal > 0 && prepay > 0 && prepay < principal;
 
   // 实时预览：输入合法即测算节省利息
@@ -68,17 +76,27 @@ export const MortgageCalculatorScreen: React.FC = () => {
       prepayAmount: prepay,
       firstPaymentYear: date.year,
       firstPaymentMonth: date.month,
+      firstPaymentDay: paymentDay,
+      totalMonths,
       annualRate: rate,
       remainingMonths: months,
       mode,
     };
     return calcMortgage(input);
-  }, [valid, principal, prepay, date.year, date.month, rate, months, mode]);
+  }, [valid, principal, prepay, date.year, date.month, paymentDay, totalMonths, rate, months, mode]);
 
   const handleCalculate = () => {
     const error = validateInput({ remainingPrincipal: principal, prepayAmount: prepay });
     if (error) {
       showToast(error);
+      return;
+    }
+    if (totalMonths <= 0 || totalMonths > 600) {
+      showToast('请输入有效的贷款总期数（1-600个月）');
+      return;
+    }
+    if (months <= 0) {
+      showToast('剩余期数需大于0，可手动调整');
       return;
     }
     if (!preview) return;
@@ -146,12 +164,33 @@ export const MortgageCalculatorScreen: React.FC = () => {
             <Text style={styles.formLabel}>首次还款日期</Text>
             <View style={styles.valueWrap}>
               <Text style={styles.valueText}>
-                {date.year}.{String(date.month).padStart(2, '0')}
+                {date.year}.{String(date.month).padStart(2, '0')}.{String(paymentDay).padStart(2, '0')}
               </Text>
               <CalendarIcon size={18} color={colors.primary} />
               <ChevronRightIcon size={16} color={colors.textTertiary} />
             </View>
           </Pressable>
+
+          <View style={styles.divider} />
+
+          <View style={styles.formRow}>
+            <Text style={styles.formLabel}>贷款总期数</Text>
+            <View style={styles.inputWrap}>
+              <TextInput
+                style={styles.input}
+                value={totalMonthsText}
+                onChangeText={(text) => {
+                  setTotalMonthsText(text.replace(/\D/g, '').slice(0, 3));
+                  setCustomMonths(null);
+                }}
+                placeholder="请输入总期数"
+                placeholderTextColor={colors.textPlaceholder}
+                keyboardType="number-pad"
+                maxLength={3}
+              />
+              <Text style={styles.unit}>月</Text>
+            </View>
+          </View>
 
           <View style={styles.divider} />
 
@@ -192,7 +231,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
             })}
           </View>
           <Text style={styles.modeHint}>
-            {MODES.find((item) => item.key === mode)?.hint} · 首次还款 {formatYearMonthCN(date.year, date.month)}
+            {MODES.find((item) => item.key === mode)?.hint} · 首次还款 {formatYearMonthCN(date.year, date.month)} {paymentDay} 日
           </Text>
         </View>
 
@@ -215,11 +254,17 @@ export const MortgageCalculatorScreen: React.FC = () => {
 
       {/* 选择器弹窗 */}
       <MonthPickerModal
+        key={monthPickerVisible ? `month-${date.year}-${date.month}-${paymentDay}` : 'month-closed'}
         visible={monthPickerVisible}
         year={date.year}
         month={date.month}
+        day={paymentDay}
         onClose={() => setMonthPickerVisible(false)}
-        onConfirm={(year, month) => setDate({ year, month })}
+        onConfirm={(year, month, day) => {
+          setDate({ year, month });
+          setPaymentDay(day);
+          setCustomMonths(null);
+        }}
       />
       <RatePickerModal
         visible={ratePickerVisible}
@@ -228,10 +273,11 @@ export const MortgageCalculatorScreen: React.FC = () => {
         onConfirm={(value) => setRate(value)}
       />
       <PeriodPickerModal
+        key={periodPickerVisible ? `period-${months}` : 'period-closed'}
         visible={periodPickerVisible}
         months={months}
         onClose={() => setPeriodPickerVisible(false)}
-        onConfirm={(value) => setMonths(value)}
+        onConfirm={(value) => setCustomMonths(value)}
       />
       <InfoModal visible={infoVisible} title="计算说明" content={CALC_INFO} onClose={() => setInfoVisible(false)} />
     </View>

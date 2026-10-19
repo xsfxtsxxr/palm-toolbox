@@ -18,7 +18,7 @@ import type {
   MortgageInput,
   MortgageResult,
 } from '../types';
-import { monthLabel } from './format';
+import { paymentDateLabel } from './format';
 
 /** 安全上限，防止异常输入导致死循环 */
 const MAX_PERIODS = 600;
@@ -42,6 +42,43 @@ export function termFor(principal: number, monthlyRate: number, payment: number)
   return Math.max(1, Math.ceil(-Math.log(x) / Math.log(1 + monthlyRate)));
 }
 
+export interface PaymentDate {
+  year: number;
+  month: number;
+  day: number;
+}
+
+/** 返回首个尚未到期的还款日；短月份按月末处理。 */
+export function getNextPaymentDate(firstPayment: PaymentDate, asOf: Date = new Date()): PaymentDate {
+  const today = new Date(asOf.getFullYear(), asOf.getMonth(), asOf.getDate()).getTime();
+  for (let offset = 0; offset < MAX_PERIODS; offset++) {
+    const total = firstPayment.year * 12 + (firstPayment.month - 1) + offset;
+    const year = Math.floor(total / 12);
+    const month = (total % 12) + 1;
+    const day = Math.min(firstPayment.day, new Date(year, month, 0).getDate());
+    if (new Date(year, month - 1, day).getTime() >= today) return { year, month, day };
+  }
+  const total = firstPayment.year * 12 + (firstPayment.month - 1) + MAX_PERIODS - 1;
+  const year = Math.floor(total / 12);
+  const month = (total % 12) + 1;
+  return { year, month, day: Math.min(firstPayment.day, new Date(year, month, 0).getDate()) };
+}
+
+/** 计算从首期至最近未到期还款日（含）的剩余期数。 */
+export function getRemainingPaymentInfo(
+  firstPayment: PaymentDate,
+  totalMonths: number,
+  asOf: Date = new Date(),
+): PaymentDate & { remainingMonths: number } {
+  const totalMonthsClamped = Math.max(0, Math.min(MAX_PERIODS, Math.round(totalMonths)));
+  const nextPayment = getNextPaymentDate(firstPayment, asOf);
+  const offset = (nextPayment.year - firstPayment.year) * 12 + nextPayment.month - firstPayment.month;
+  return {
+    ...nextPayment,
+    remainingMonths: offset >= totalMonthsClamped ? 0 : totalMonthsClamped - offset,
+  };
+}
+
 /**
  * 生成还款计划表。payment 为月供，末期自动尾差调整。
  */
@@ -51,6 +88,7 @@ export function buildSchedule(
   payment: number,
   startYear: number,
   startMonth: number,
+  startDay: number,
   maxPeriods: number,
 ): AmortizationRow[] {
   const rows: AmortizationRow[] = [];
@@ -68,7 +106,7 @@ export function buildSchedule(
     balance = Math.max(0, balance - principalPart);
     rows.push({
       period: i,
-      yearMonth: monthLabel(startYear, startMonth, i - 1),
+      paymentDate: paymentDateLabel(startYear, startMonth, startDay, i - 1),
       payment: pay,
       principal: principalPart,
       interest,
@@ -84,12 +122,13 @@ function sumInterest(rows: AmortizationRow[]): number {
 }
 
 /** 主入口：提前还款测算 */
-export function calcMortgage(input: MortgageInput): MortgageResult {
+export function calcMortgage(input: MortgageInput, asOf: Date = new Date()): MortgageResult {
   const {
     remainingPrincipal: P,
     prepayAmount,
     firstPaymentYear,
     firstPaymentMonth,
+    firstPaymentDay,
     annualRate,
     remainingMonths: rawMonths,
     mode,
@@ -97,10 +136,11 @@ export function calcMortgage(input: MortgageInput): MortgageResult {
 
   const r = annualRate / 100 / 12;
   const n0 = Math.max(1, Math.min(MAX_PERIODS, Math.round(rawMonths)));
+  const nextPayment = getNextPaymentDate({ year: firstPaymentYear, month: firstPaymentMonth, day: firstPaymentDay }, asOf);
 
   // —— 提前还款前 ——
   const M0 = annuityPayment(P, r, n0);
-  const beforeSchedule = buildSchedule(P, r, M0, firstPaymentYear, firstPaymentMonth, n0);
+  const beforeSchedule = buildSchedule(P, r, M0, nextPayment.year, nextPayment.month, nextPayment.day, n0);
   const totalInterestBefore = sumInterest(beforeSchedule);
 
   // —— 提前还款后 ——
@@ -121,12 +161,12 @@ export function calcMortgage(input: MortgageInput): MortgageResult {
     // 减少月供：期限不变
     newMonthlyPayment = annuityPayment(newPrincipal, r, n0);
     newRemainingMonths = n0;
-    schedule = buildSchedule(newPrincipal, r, newMonthlyPayment, firstPaymentYear, firstPaymentMonth, n0);
+    schedule = buildSchedule(newPrincipal, r, newMonthlyPayment, nextPayment.year, nextPayment.month, nextPayment.day, n0);
   } else {
     // 缩短期限：月供不变，反解期数
     newMonthlyPayment = M0;
     newRemainingMonths = termFor(newPrincipal, r, M0);
-    schedule = buildSchedule(newPrincipal, r, M0, firstPaymentYear, firstPaymentMonth, newRemainingMonths);
+    schedule = buildSchedule(newPrincipal, r, M0, nextPayment.year, nextPayment.month, nextPayment.day, newRemainingMonths);
   }
 
   const totalInterestAfter = sumInterest(schedule);

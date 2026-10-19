@@ -35,10 +35,10 @@ export const RepaymentPlanScreen: React.FC = () => {
       showToast('暂无还款明细可导出');
       return;
     }
-    const header = '期数,月供总额,月供本金,月供利息,剩余总额';
+    const header = '还款日期,月供总额,月供本金,月供利息,剩余总额';
     const lines = result.schedule.map((row) =>
       [
-        row.yearMonth,
+        row.paymentDate,
         Math.round(row.payment),
         Math.round(row.principal),
         Math.round(row.interest),

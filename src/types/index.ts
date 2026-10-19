@@ -34,6 +34,10 @@ export interface MortgageInput {
   firstPaymentYear: number;
   /** 首次还款日期 - 月 */
   firstPaymentMonth: number;
+  /** 首次还款日期 - 日 */
+  firstPaymentDay: number;
+  /** 贷款总期数（月） */
+  totalMonths: number;
   /** 贷款年利率（%） */
   annualRate: number;
   /** 剩余期数（月） */
@@ -45,8 +49,8 @@ export interface MortgageInput {
 export interface AmortizationRow {
   /** 期数（1 起） */
   period: number;
-  /** 年月标签，如 2026.11 */
-  yearMonth: string;
+  /** 还款日期，如 2026.11.15 */
+  paymentDate: string;
   /** 月供总额 */
   payment: number;
   /** 月供本金 */
