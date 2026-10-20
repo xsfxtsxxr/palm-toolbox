@@ -47,10 +47,10 @@ export function fmtAmountInput(raw: string): string {
 }
 
 /**
- * 输入框金额（支持两位小数）：保留数字与一个小数点，整数部分加千分位
+ * 输入框金额（支持指定位数小数）：保留数字与一个小数点，整数部分加千分位
  * 如 "12345.6" -> "12,345.6"，"0.5" -> "0.5"
  */
-export function fmtMoneyInput(raw: string): string {
+export function fmtDecimalInput(raw: string, maxDecimals = 2): string {
   const cleaned = raw.replace(/[^\d.]/g, '');
   const dot = cleaned.indexOf('.');
   const integerRaw = (dot < 0 ? cleaned : cleaned.slice(0, dot)).replace(/^0+(?=\d)/, '').slice(0, 12);
@@ -59,8 +59,13 @@ export function fmtMoneyInput(raw: string): string {
   const decimalPart = cleaned
     .slice(dot + 1)
     .replace(/\./g, '')
-    .slice(0, 2);
+    .slice(0, Math.max(0, maxDecimals));
   return `${integerPart || '0'}.${decimalPart}`;
+}
+
+/** 输入框金额（两位小数） */
+export function fmtMoneyInput(raw: string): string {
+  return fmtDecimalInput(raw, 2);
 }
 
 /** 解析带千分位 / 小数的金额输入 */

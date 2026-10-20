@@ -11,6 +11,7 @@ export type RootStackParamList = {
   TaxCalculator: undefined;
   TaxDetail: { result: TaxResult };
   CurrencyConverter: undefined;
+  UnitConverter: undefined;
   AllTools: undefined;
 };
 

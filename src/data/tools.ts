@@ -50,7 +50,7 @@ export const TOOLS: Tool[] = [
     subtitle: '长度/重量',
     icon: 'unit',
     tile: 'purple',
-    implemented: false,
+    implemented: true,
   },
   {
     id: 'ledger',

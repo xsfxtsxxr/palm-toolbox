@@ -33,6 +33,8 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('TaxCalculator');
     } else if (tool.id === 'currency') {
       navigation.navigate('CurrencyConverter');
+    } else if (tool.id === 'unit') {
+      navigation.navigate('UnitConverter');
     } else {
       showToast(`「${tool.name}」即将上线，敬请期待`);
     }
