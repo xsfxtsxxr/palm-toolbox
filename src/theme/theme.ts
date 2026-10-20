@@ -86,6 +86,7 @@ export const tileThemes = {
   coral: { bg: '#FFEDE8', color: '#FB7B4B' },
   indigo: { bg: '#ECEAFB', color: '#6C63F5' },
   red: { bg: '#FFE9E9', color: '#F05252' },
+  gold: { bg: '#FFF4DC', color: '#D69A15' },
 } as const;
 
 export type TileThemeKey = keyof typeof tileThemes;

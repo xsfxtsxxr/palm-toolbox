@@ -178,6 +178,17 @@ const CalendarIcon: React.FC<IconProps> = ({ size = 30, color }) => (
   </Svg>
 );
 
+/* ---------------- 金价查询：金条堆 ---------------- */
+const GoldIcon: React.FC<IconProps> = ({ size = 30, color }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M8.6 5.2 H15.4 L16.9 9.2 H7.1 Z" stroke={color} strokeWidth={1.7} strokeLinejoin="round" />
+    <Line x1={10.3} y1={7.2} x2={13.7} y2={7.2} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+    <Path d="M5.2 12.4 H18.8 L20.7 17 H3.3 Z" stroke={color} strokeWidth={1.7} strokeLinejoin="round" />
+    <Line x1={8.2} y1={14.7} x2={15.8} y2={14.7} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+    <Line x1={2.6} y1={20.2} x2={21.4} y2={20.2} stroke={color} strokeWidth={1.7} strokeLinecap="round" />
+  </Svg>
+);
+
 const ICONS: Record<ToolIconName, React.FC<IconProps>> = {
   mortgage: MortgageIcon,
   deposit: DepositIcon,
@@ -189,6 +200,7 @@ const ICONS: Record<ToolIconName, React.FC<IconProps>> = {
   financial: FinancialIcon,
   tomato: TomatoIcon,
   calendar: CalendarIcon,
+  gold: GoldIcon,
 };
 
 export const ToolIcon: React.FC<IconProps & { name: ToolIconName }> = ({

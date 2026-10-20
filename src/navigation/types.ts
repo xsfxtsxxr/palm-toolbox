@@ -1,6 +1,7 @@
 /** 导航参数类型定义 */
 import type { MortgageResult } from '../types';
 import type { TaxResult } from '../utils/tax';
+import type { Todo } from '../utils/todo';
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -12,6 +13,11 @@ export type RootStackParamList = {
   TaxDetail: { result: TaxResult };
   CurrencyConverter: undefined;
   UnitConverter: undefined;
+  Ledger: undefined;
+  GoldPrice: undefined;
+  Todo: undefined;
+  TodoEdit: { todo?: Todo } | undefined;
+  TodoStats: undefined;
   AllTools: undefined;
 };
 

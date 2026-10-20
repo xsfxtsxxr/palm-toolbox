@@ -222,6 +222,51 @@ export const RefreshIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' 
   </Svg>
 );
 
+/** 记一笔（加号圆） */
+export const PlusCircleIcon: React.FC<IconProps> = ({ size = 22, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.9} />
+    <Line x1={12} y1={7.8} x2={12} y2={16.2} stroke={color} strokeWidth={2} strokeLinecap="round" />
+    <Line x1={7.8} y1={12} x2={16.2} y2={12} stroke={color} strokeWidth={2} strokeLinecap="round" />
+  </Svg>
+);
+
+/** 流水明细（列表） */
+export const ListIcon: React.FC<IconProps> = ({ size = 22, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx={5.6} cy={7.2} r={1.15} fill={color} />
+    <Circle cx={5.6} cy={12} r={1.15} fill={color} />
+    <Circle cx={5.6} cy={16.8} r={1.15} fill={color} />
+    <Line x1={9.6} y1={7.2} x2={19} y2={7.2} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    <Line x1={9.6} y1={12} x2={19} y2={12} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    <Line x1={9.6} y1={16.8} x2={16.4} y2={16.8} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+  </Svg>
+);
+
+/** 编辑（铅笔） */
+export const EditIcon: React.FC<IconProps> = ({ size = 16, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M14.6 4.8 L19.2 9.4 L9.2 19.4 H4.6 V14.8 Z"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinejoin="round"
+    />
+    <Line x1={12.8} y1={6.6} x2={17.4} y2={11.2} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+  </Svg>
+);
+
+/** 删除（垃圾桶） */
+export const TrashIcon: React.FC<IconProps> = ({ size = 16, color = '#FFFFFF' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Line x1={4.6} y1={7.4} x2={19.4} y2={7.4} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    <Path d="M9.4 7.4 V4.8 H14.6 V7.4" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
+    <Path d="M6.6 7.4 L7.6 19.8 H16.4 L17.4 7.4" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
+    <Line x1={10.4} y1={10.8} x2={10.4} y2={16.6} stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+    <Line x1={13.6} y1={10.8} x2={13.6} y2={16.6} stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+  </Svg>
+);
+
 /* ---------------- 底部 Tab 图标 ---------------- */
 
 export const HomeTabIcon: React.FC<IconProps & { active?: boolean }> = ({

@@ -58,7 +58,7 @@ export const TOOLS: Tool[] = [
     subtitle: '日常开销',
     icon: 'ledger',
     tile: 'coral',
-    implemented: false,
+    implemented: true,
   },
   {
     id: 'todo',
@@ -66,15 +66,15 @@ export const TOOLS: Tool[] = [
     subtitle: '效率管理',
     icon: 'todo',
     tile: 'indigo',
-    implemented: false,
+    implemented: true,
   },
   {
-    id: 'calendar',
-    name: '日历提醒',
-    subtitle: '日程提醒',
-    icon: 'calendar',
-    tile: 'blue',
-    implemented: false,
+    id: 'gold',
+    name: '金价查询',
+    subtitle: '品牌挂牌价',
+    icon: 'gold',
+    tile: 'gold',
+    implemented: true,
   },
 ];
 

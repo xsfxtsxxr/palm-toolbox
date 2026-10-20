@@ -19,6 +19,11 @@ import { TaxCalculatorScreen } from '../screens/TaxCalculatorScreen';
 import { TaxDetailScreen } from '../screens/TaxDetailScreen';
 import { CurrencyConverterScreen } from '../screens/CurrencyConverterScreen';
 import { UnitConverterScreen } from '../screens/UnitConverterScreen';
+import { LedgerScreen } from '../screens/LedgerScreen';
+import { TodoScreen } from '../screens/TodoScreen';
+import { TodoEditScreen } from '../screens/TodoEditScreen';
+import { TodoStatsScreen } from '../screens/TodoStatsScreen';
+import { GoldPriceScreen } from '../screens/GoldPriceScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -82,6 +87,31 @@ export const AppNavigator: React.FC = () => (
       <Stack.Screen
         name="UnitConverter"
         component={UnitConverterScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="Ledger"
+        component={LedgerScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="Todo"
+        component={TodoScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="TodoEdit"
+        component={TodoEditScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="TodoStats"
+        component={TodoStatsScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="GoldPrice"
+        component={GoldPriceScreen}
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen

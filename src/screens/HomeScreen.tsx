@@ -35,6 +35,12 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('CurrencyConverter');
     } else if (tool.id === 'unit') {
       navigation.navigate('UnitConverter');
+    } else if (tool.id === 'ledger') {
+      navigation.navigate('Ledger');
+    } else if (tool.id === 'todo') {
+      navigation.navigate('Todo');
+    } else if (tool.id === 'gold') {
+      navigation.navigate('GoldPrice');
     } else {
       showToast(`「${tool.name}」即将上线，敬请期待`);
     }

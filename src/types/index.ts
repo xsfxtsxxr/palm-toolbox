@@ -10,15 +10,16 @@ export type ToolIconName =
   | 'todo'
   | 'financial'
   | 'tomato'
-  | 'calendar';
+  | 'calendar'
+  | 'gold';
 
 export interface Tool {
   id: string;
   name: string;
   subtitle: string;
   icon: ToolIconName;
-  tile: 'blue' | 'green' | 'orange' | 'teal' | 'purple' | 'coral' | 'indigo' | 'red';
-  /** 是否已实现（房贷 / 存款 / 理财 / 个税 / 汇率 / 单位已上线） */
+  tile: 'blue' | 'green' | 'orange' | 'teal' | 'purple' | 'coral' | 'indigo' | 'red' | 'gold';
+  /** 是否已实现（房贷 / 存款 / 理财 / 个税 / 汇率 / 单位 / 记账本 / 待办 / 金价已上线） */
   implemented: boolean;
   hot?: boolean;
 }
