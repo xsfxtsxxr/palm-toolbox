@@ -42,7 +42,7 @@ export const TOOLS: Tool[] = [
     subtitle: '实时汇率',
     icon: 'currency',
     tile: 'teal',
-    implemented: false,
+    implemented: true,
   },
   {
     id: 'unit',

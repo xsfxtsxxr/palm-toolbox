@@ -183,6 +183,45 @@ export const CoinsIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' })
   </Svg>
 );
 
+/** 币种互换（双向箭头） */
+export const SwapIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M4.6 9.2 H19 M19 9.2 L15.8 6 M19 9.2 L15.8 12.4"
+      stroke={color}
+      strokeWidth={1.9}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M19.4 14.8 H5 M5 14.8 L8.2 11.6 M5 14.8 L8.2 18"
+      stroke={color}
+      strokeWidth={1.9}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+/** 刷新汇率 */
+export const RefreshIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M20.2 12 A8.2 8.2 0 1 1 17.4 6"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M20.6 4.2 V9.4 H15.4"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
 /* ---------------- 底部 Tab 图标 ---------------- */
 
 export const HomeTabIcon: React.FC<IconProps & { active?: boolean }> = ({

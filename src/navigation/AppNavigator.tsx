@@ -17,6 +17,7 @@ import { DepositCalculatorScreen } from '../screens/DepositCalculatorScreen';
 import { FinancialCalculatorScreen } from '../screens/FinancialCalculatorScreen';
 import { TaxCalculatorScreen } from '../screens/TaxCalculatorScreen';
 import { TaxDetailScreen } from '../screens/TaxDetailScreen';
+import { CurrencyConverterScreen } from '../screens/CurrencyConverterScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -70,6 +71,11 @@ export const AppNavigator: React.FC = () => (
       <Stack.Screen
         name="TaxDetail"
         component={TaxDetailScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="CurrencyConverter"
+        component={CurrencyConverterScreen}
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen

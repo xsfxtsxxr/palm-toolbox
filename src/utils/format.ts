@@ -46,6 +46,29 @@ export function fmtAmountInput(raw: string): string {
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+/**
+ * 输入框金额（支持两位小数）：保留数字与一个小数点，整数部分加千分位
+ * 如 "12345.6" -> "12,345.6"，"0.5" -> "0.5"
+ */
+export function fmtMoneyInput(raw: string): string {
+  const cleaned = raw.replace(/[^\d.]/g, '');
+  const dot = cleaned.indexOf('.');
+  const integerRaw = (dot < 0 ? cleaned : cleaned.slice(0, dot)).replace(/^0+(?=\d)/, '').slice(0, 12);
+  const integerPart = integerRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (dot < 0) return integerPart;
+  const decimalPart = cleaned
+    .slice(dot + 1)
+    .replace(/\./g, '')
+    .slice(0, 2);
+  return `${integerPart || '0'}.${decimalPart}`;
+}
+
+/** 解析带千分位 / 小数的金额输入 */
+export function parseMoney(text: string): number {
+  const value = parseFloat(text.replace(/,/g, ''));
+  return Number.isFinite(value) ? value : 0;
+}
+
 /** 解析输入框金额字符串为数字 */
 export function parseAmount(text: string): number {
   const digits = text.replace(/\D/g, '');
