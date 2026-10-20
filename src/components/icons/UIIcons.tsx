@@ -2,7 +2,7 @@
  * 通用 UI 图标（SVG 线性风格，与工具图标统一）
  */
 import React from 'react';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Ellipse, Line, Path, Rect } from 'react-native-svg';
 
 interface IconProps {
   size?: number;
@@ -89,6 +89,20 @@ export const ShieldCheckIcon: React.FC<IconProps> = ({ size = 26, color = '#3E7B
   </Svg>
 );
 
+/** 警示三角（免责提示） */
+export const AlertIcon: React.FC<IconProps> = ({ size = 13, color = '#98A2B3' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 3.6 L21.4 20.2 H2.6 Z"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinejoin="round"
+    />
+    <Line x1={12} y1={9.4} x2={12} y2={14.2} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    <Circle cx={12} cy={17.2} r={0.95} fill={color} />
+  </Svg>
+);
+
 /** 导出（上传箭头） */
 export const ExportIcon: React.FC<IconProps> = ({ size = 14, color = '#0D4A3D' }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -121,6 +135,51 @@ export const CameraBadgeIcon: React.FC<IconProps> = ({ size = 10, color = '#FFFF
       strokeLinejoin="round"
     />
     <Circle cx={12} cy={13} r={3.4} stroke={color} strokeWidth={2.2} />
+  </Svg>
+);
+
+/** 收入（钱袋 + ¥） */
+export const MoneyBagIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M9.4 8.4 L7.2 4.4 H16.8 L14.6 8.4"
+      stroke={color}
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M14.6 8.4 C18 9.8 20.2 12.7 20.2 15.6 C20.2 19.3 16.5 21.4 12 21.4 C7.5 21.4 3.8 19.3 3.8 15.6 C3.8 12.7 6 9.8 9.4 8.4 Z"
+      stroke={color}
+      strokeWidth={1.7}
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M10.2 13.4 L12 15.4 L13.8 13.4 M12 15.4 V18 M10.5 14.9 H13.5 M10.5 16.1 H13.5"
+      stroke={color}
+      strokeWidth={1.35}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+/** 钱包（到手工资） */
+export const WalletIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Rect x={3.2} y={5.8} width={17.6} height={13.2} rx={3} stroke={color} strokeWidth={1.7} />
+    <Line x1={3.2} y1={10.4} x2={15.2} y2={10.4} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Rect x={14.2} y={11.8} width={6.6} height={4.2} rx={1.5} stroke={color} strokeWidth={1.5} />
+    <Circle cx={16.4} cy={13.9} r={0.75} fill={color} />
+  </Svg>
+);
+
+/** 金币堆（月均 / 税费） */
+export const CoinsIcon: React.FC<IconProps> = ({ size = 20, color = '#0D4A3D' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Ellipse cx={12} cy={7.2} rx={6.4} ry={2.8} stroke={color} strokeWidth={1.6} />
+    <Path d="M5.6 7.2 V11.6 C5.6 13.2 8.5 14.4 12 14.4 C15.5 14.4 18.4 13.2 18.4 11.6 V7.2" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+    <Path d="M5.6 11.2 V15.6 C5.6 17.2 8.5 18.4 12 18.4 C15.5 18.4 18.4 17.2 18.4 15.6 V11.2" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
   </Svg>
 );
 

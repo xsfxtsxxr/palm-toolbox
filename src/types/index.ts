@@ -8,6 +8,7 @@ export type ToolIconName =
   | 'unit'
   | 'ledger'
   | 'todo'
+  | 'financial'
   | 'tomato'
   | 'calendar';
 
@@ -17,7 +18,7 @@ export interface Tool {
   subtitle: string;
   icon: ToolIconName;
   tile: 'blue' | 'green' | 'orange' | 'teal' | 'purple' | 'coral' | 'indigo' | 'red';
-  /** 是否已实现（房贷 / 存款计算器已上线） */
+  /** 是否已实现（房贷 / 存款 / 理财 / 个税计算器已上线） */
   implemented: boolean;
   hot?: boolean;
 }

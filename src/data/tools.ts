@@ -21,12 +21,20 @@ export const TOOLS: Tool[] = [
     implemented: true,
   },
   {
+    id: 'financial',
+    name: '理财计算器',
+    subtitle: '活期理财',
+    icon: 'financial',
+    tile: 'red',
+    implemented: true,
+  },
+  {
     id: 'tax',
     name: '个税计算',
     subtitle: '工资到手',
     icon: 'tax',
     tile: 'orange',
-    implemented: false,
+    implemented: true,
   },
   {
     id: 'currency',
@@ -58,14 +66,6 @@ export const TOOLS: Tool[] = [
     subtitle: '效率管理',
     icon: 'todo',
     tile: 'indigo',
-    implemented: false,
-  },
-  {
-    id: 'tomato',
-    name: '番茄钟',
-    subtitle: '专注时钟',
-    icon: 'tomato',
-    tile: 'red',
     implemented: false,
   },
   {
@@ -101,3 +101,12 @@ export const DEPOSIT_RATE_PRESETS: { label: string; rate: number }[] = [
   { label: '特色存款', rate: 1.55 },
   { label: '大额存单', rate: 1.75 },
 ];
+
+/** 活期理财常用七日年化收益率（%） */
+export const WEALTH_ANNUAL_PRESETS = [1.5, 1.8, 2.0, 2.2, 2.5, 2.8, 3.0, 3.3, 3.5];
+
+/** 活期理财常用每万份收益（元） */
+export const WEALTH_WANFEN_PRESETS = [0.5, 0.65, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0];
+
+/** 持有天数预设 */
+export const WEALTH_DAY_PRESETS = [7, 14, 30, 60, 90, 180, 270, 365, 540, 730];

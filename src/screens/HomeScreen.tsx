@@ -27,6 +27,10 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('MortgageCalculator');
     } else if (tool.id === 'deposit') {
       navigation.navigate('DepositCalculator');
+    } else if (tool.id === 'financial') {
+      navigation.navigate('FinancialCalculator');
+    } else if (tool.id === 'tax') {
+      navigation.navigate('TaxCalculator');
     } else {
       showToast(`「${tool.name}」即将上线，敬请期待`);
     }

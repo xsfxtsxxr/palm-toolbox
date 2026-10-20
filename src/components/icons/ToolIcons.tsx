@@ -136,6 +136,22 @@ const TodoIcon: React.FC<IconProps> = ({ size = 30, color }) => (
   </Svg>
 );
 
+/* ---------------- 理财计算器：金币 + 上升趋势 ---------------- */
+const FinancialIcon: React.FC<IconProps> = ({ size = 30, color }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx={9} cy={9} r={5.8} stroke={color} strokeWidth={1.7} />
+    <Path
+      d="M7.2 7.1 L9 9.1 L10.8 7.1 M9 9.1 V11.8 M7.7 8.6 H10.3 M7.7 9.9 H10.3"
+      stroke={color}
+      strokeWidth={1.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path d="M13.3 19.8 H20.6 V12.5" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />
+    <Path d="M13.8 16.3 L16.4 13.7 L18.2 15.5 L21 12.7 M18.7 12.7 H21 V15" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+  </Svg>
+);
+
 /* ---------------- 番茄钟 ---------------- */
 const TomatoIcon: React.FC<IconProps> = ({ size = 30, color }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -170,6 +186,7 @@ const ICONS: Record<ToolIconName, React.FC<IconProps>> = {
   unit: UnitIcon,
   ledger: LedgerIcon,
   todo: TodoIcon,
+  financial: FinancialIcon,
   tomato: TomatoIcon,
   calendar: CalendarIcon,
 };
