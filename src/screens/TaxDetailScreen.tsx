@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { fmtPercent, fmtYuan, fmtYuanDecimal } from '../utils/format';
 import { TaxTable } from '../components/TaxTable';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -23,6 +23,8 @@ import {
   WalletIcon,
 } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'TaxDetail'>;
@@ -36,6 +38,9 @@ const DETAIL_INFO =
   '测算假设全年收入、五险一金和专项附加扣除每月相同，不含年终奖、劳务报酬、稿酬、经营所得，也未考虑减免税额与年度汇算清缴。实际税额以扣缴单位申报与税务机关核定为准。';
 
 export const TaxDetailScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
   const insets = useSafeAreaInsets();
@@ -177,7 +182,7 @@ export const TaxDetailScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

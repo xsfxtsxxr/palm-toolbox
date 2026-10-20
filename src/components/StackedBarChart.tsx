@@ -4,8 +4,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
-import { colors, fontSize, radius, shadow } from '../theme/theme';
+import { fontSize, radius, shadow } from '../theme/theme';
 import type { AmortizationRow } from '../types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   rows: AmortizationRow[];
@@ -18,6 +20,9 @@ const GAP = 8;
 const TOP_PAD = 8;
 
 export const StackedBarChart: React.FC<Props> = ({ rows }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const data = rows.slice(0, 12);
   if (data.length === 0) return null;
 
@@ -90,7 +95,7 @@ export const StackedBarChart: React.FC<Props> = ({ rows }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   card: {
     backgroundColor: colors.card,
     borderRadius: radius.lg,

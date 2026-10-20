@@ -4,10 +4,12 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius } from '../theme/theme';
+import { fontSize, radius } from '../theme/theme';
 import type { AmortizationRow } from '../types';
 import { fmtMoney } from '../utils/format';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   rows: AmortizationRow[];
@@ -17,6 +19,9 @@ interface Props {
 const COLUMNS = ['还款日', '月供总额', '月供本金', '月供利息', '剩余总额'];
 
 export const AmortizationTable: React.FC<Props> = ({ rows, previewCount = 12 }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [expanded, setExpanded] = useState(false);
   const displayRows = useMemo(
     () => (expanded ? rows : rows.slice(0, previewCount)),
@@ -87,7 +92,7 @@ export const AmortizationTable: React.FC<Props> = ({ rows, previewCount = 12 }) 
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     backgroundColor: colors.card,
     borderRadius: radius.lg,

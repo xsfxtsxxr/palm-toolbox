@@ -1,10 +1,11 @@
 /** 导航参数类型定义 */
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { MortgageResult } from '../types';
 import type { TaxResult } from '../utils/tax';
 import type { Todo } from '../utils/todo';
 
 export type RootStackParamList = {
-  MainTabs: undefined;
+  MainTabs: NavigatorScreenParams<TabParamList> | undefined;
   MortgageCalculator: undefined;
   RepaymentPlan: { result: MortgageResult };
   DepositCalculator: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   Todo: undefined;
   TodoEdit: { todo?: Todo } | undefined;
   TodoStats: undefined;
+  CalcRecords: undefined;
   AllTools: undefined;
 };
 

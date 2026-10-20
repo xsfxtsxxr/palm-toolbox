@@ -1,7 +1,9 @@
 /** 主操作按钮（深 Teal 大按钮，与设计稿一致） */
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
-import { colors, fontSize, radius } from '../theme/theme';
+import { fontSize, radius } from '../theme/theme';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   title: string;
@@ -11,7 +13,10 @@ interface Props {
   style?: ViewStyle;
 }
 
-export const PrimaryButton: React.FC<Props> = ({ title, onPress, disabled, loading, style }) => (
+export const PrimaryButton: React.FC<Props> = ({ title, onPress, disabled, loading, style }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+  return (
   <Pressable
     accessibilityRole="button"
     style={({ pressed }) => [
@@ -30,8 +35,9 @@ export const PrimaryButton: React.FC<Props> = ({ title, onPress, disabled, loadi
     )}
   </Pressable>
 );
+};
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   button: {
     height: 50,
     borderRadius: radius.md,

@@ -1,9 +1,11 @@
 /** 月份切换器（流水 / 统计共用） */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { currentMonthKey, formatMonthCN, shiftMonth } from '../utils/ledger';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   month: string;
@@ -13,6 +15,9 @@ interface Props {
 }
 
 export const MonthSwitcher: React.FC<Props> = ({ month, onChange, maxMonth = currentMonthKey() }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const canGoNext = month < maxMonth;
 
   return (
@@ -47,7 +52,7 @@ export const MonthSwitcher: React.FC<Props> = ({ month, onChange, maxMonth = cur
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',

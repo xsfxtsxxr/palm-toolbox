@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import {
   categoryOfTodo,
   formatDateLabel,
@@ -13,6 +13,8 @@ import {
 } from '../utils/todo';
 import { createSwipeRow } from './swipeRow';
 import { EditIcon, TrashIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   todo: Todo;
@@ -37,6 +39,9 @@ export const TodoRow: React.FC<Props> = ({
   onLongPress,
   onSelect,
 }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [swipe] = useState(createSwipeRow);
   const [checkbox] = useState(() => new Animated.Value(1));
 
@@ -165,7 +170,7 @@ export const TodoRow: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   wrap: {
     backgroundColor: colors.card,
     overflow: 'hidden',

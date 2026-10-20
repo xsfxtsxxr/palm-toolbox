@@ -4,11 +4,13 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import { useCalculations } from '../context/CalculationContext';
 import { fmtMoney, fmtYuan } from '../utils/format';
 import { StackedBarChart } from '../components/StackedBarChart';
 import { ChartEmptyIcon } from '../components/icons/UIIcons';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 const MODE_LABELS: Record<string, string> = {
   reducePayment: '减少月供（期限不变）',
@@ -16,6 +18,8 @@ const MODE_LABELS: Record<string, string> = {
 };
 
 export const StatisticsScreen: React.FC = () => {
+  const styles = useThemedStyles(makeStyles);
+
   const insets = useSafeAreaInsets();
   const { history, latest, totalCount, totalSavedInterest } = useCalculations();
 
@@ -117,7 +121,7 @@ export const StatisticsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -3,8 +3,10 @@
  */
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { PickerModal } from './PickerModal';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -19,6 +21,8 @@ const MINUTES = Array.from({ length: 12 }, (_, index) => index * 5);
 const pad2 = (value: number) => String(value).padStart(2, '0');
 
 export const TimePickerModal: React.FC<Props> = ({ visible, value, onClose, onConfirm }) => {
+  const styles = useThemedStyles(makeStyles);
+
   const initialHour = value ? Number(value.slice(0, 2)) : 9;
   const initialMinute = value ? Number(value.slice(3, 5)) : 0;
 
@@ -98,7 +102,7 @@ export const TimePickerModal: React.FC<Props> = ({ visible, value, onClose, onCo
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   preview: {
     textAlign: 'center',
     fontSize: 30,

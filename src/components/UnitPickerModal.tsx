@@ -1,9 +1,11 @@
 /** 单位选择器（长度 / 重量共用） */
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import type { UnitDef } from '../utils/unit';
 import { PickerModal } from './PickerModal';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -21,7 +23,9 @@ export const UnitPickerModal: React.FC<Props> = ({
   selected,
   onClose,
   onSelect,
-}) => (
+}) => {
+  const styles = useThemedStyles(makeStyles);
+  return (
   <PickerModal visible={visible} title={title} onClose={onClose}>
     <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
       {units.map((unit, index) => {
@@ -50,8 +54,9 @@ export const UnitPickerModal: React.FC<Props> = ({
     </ScrollView>
   </PickerModal>
 );
+};
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   list: {
     maxHeight: 380,
   },

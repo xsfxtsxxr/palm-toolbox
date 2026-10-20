@@ -1,9 +1,11 @@
 /** 币种选择器（全量币种 / 常用币种共用） */
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { currencyName } from '../utils/currency';
 import { PickerModal } from './PickerModal';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -21,7 +23,9 @@ export const CurrencyPickerModal: React.FC<Props> = ({
   codes,
   onClose,
   onSelect,
-}) => (
+}) => {
+  const styles = useThemedStyles(makeStyles);
+  return (
   <PickerModal visible={visible} title={title} onClose={onClose}>
     <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
       {codes.map((code, index) => {
@@ -50,8 +54,9 @@ export const CurrencyPickerModal: React.FC<Props> = ({
     </ScrollView>
   </PickerModal>
 );
+};
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   list: {
     maxHeight: 400,
   },

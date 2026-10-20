@@ -1,8 +1,10 @@
 /** 说明弹窗（等额本息 / 数据说明） */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { PickerModal } from './PickerModal';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -11,7 +13,9 @@ interface Props {
   onClose: () => void;
 }
 
-export const InfoModal: React.FC<Props> = ({ visible, title, content, onClose }) => (
+export const InfoModal: React.FC<Props> = ({ visible, title, content, onClose }) => {
+  const styles = useThemedStyles(makeStyles);
+  return (
   <PickerModal
     visible={visible}
     title={title}
@@ -25,8 +29,9 @@ export const InfoModal: React.FC<Props> = ({ visible, title, content, onClose })
     <Text style={styles.content}>{content}</Text>
   </PickerModal>
 );
+};
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   content: {
     fontSize: fontSize.body,
     lineHeight: 22,

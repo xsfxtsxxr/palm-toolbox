@@ -13,7 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import type { MortgageInput, PrepayMode } from '../types';
 import { calcMortgage, getRemainingPaymentInfo, validateInput } from '../utils/mortgage';
 import { fmtAmountInput, fmtPercent, fmtYuan, formatYearMonthCN, nextYearMonth, parseAmount } from '../utils/format';
@@ -26,7 +26,10 @@ import { GradientAmountText } from '../components/icons/ToolIcons';
 import { BackIcon, CalendarIcon, ChevronRightIcon, InfoIcon, ShieldCheckIcon } from '../components/icons/UIIcons';
 import { useToast } from '../components/Toast';
 import { useCalculations } from '../context/CalculationContext';
+import { useCalcRecorder } from '../hooks/useCalcRecord';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -39,10 +42,14 @@ const CALC_INFO =
   '等额本息：每月还款额固定，由本金与利息两部分组成，前期利息占比高、后期本金占比高。\n\n提前还款后提供两种方式：\n· 减少月供 —— 保持剩余期限不变，按剩余本金重新计算月供；\n· 缩短期限 —— 保持月供不变，反解新的还款期数。\n\n测算结果仅供参考，实际以贷款合同与银行核算为准。';
 
 export const MortgageCalculatorScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
   const { addResult } = useCalculations();
+  const { commit: commitCalc } = useCalcRecorder('mortgage');
 
   const [principalText, setPrincipalText] = useState('');
   const [prepayText, setPrepayText] = useState('');
@@ -101,6 +108,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
     }
     if (!preview) return;
     addResult(preview);
+    commitCalc(`剩余本金 ${principal} 万 · 剩余 ${totalMonths} 期`);
     navigation.navigate('RepaymentPlan', { result: preview });
   };
 
@@ -284,7 +292,7 @@ export const MortgageCalculatorScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

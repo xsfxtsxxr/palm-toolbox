@@ -11,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   CATEGORIES,
   MAX_AMOUNT,
@@ -28,6 +28,8 @@ import { MonthPickerModal } from './MonthPickerModal';
 import { PrimaryButton } from './PrimaryButton';
 import { useToast } from './Toast';
 import { CalendarIcon, ChevronRightIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   editing: LedgerRecord | null;
@@ -48,6 +50,9 @@ const partsOf = (date: string) => ({
 });
 
 export const LedgerEntryForm: React.FC<Props> = ({ editing, recent, onSave, onCancelEdit }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const { showToast } = useToast();
 
   const [type, setType] = useState<LedgerType>(editing?.type ?? 'expense');
@@ -250,7 +255,7 @@ export const LedgerEntryForm: React.FC<Props> = ({ editing, recent, onSave, onCa
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,

@@ -17,7 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   FILTERS,
   createTodo,
@@ -43,6 +43,8 @@ import { InfoModal } from '../components/InfoModal';
 import { useToast } from '../components/Toast';
 import { BackIcon, ChartTabIcon, InfoIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -64,6 +66,9 @@ const EMPTY_TEXT: Record<TodoFilter, { icon: string; title: string; text: string
 };
 
 export const TodoScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -263,7 +268,7 @@ export const TodoScreen: React.FC = () => {
   const empty = EMPTY_TEXT[filter];
 
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable
           accessibilityRole="button"
@@ -437,7 +442,7 @@ export const TodoScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

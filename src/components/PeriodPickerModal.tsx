@@ -3,9 +3,11 @@
  */
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { PERIOD_PRESETS } from '../data/tools';
 import { PickerModal } from './PickerModal';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -15,6 +17,9 @@ interface Props {
 }
 
 export const PeriodPickerModal: React.FC<Props> = ({ visible, months, onClose, onConfirm }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [picked, setPicked] = useState(months);
   const [custom, setCustom] = useState('');
 
@@ -80,7 +85,7 @@ export const PeriodPickerModal: React.FC<Props> = ({ visible, months, onClose, o
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

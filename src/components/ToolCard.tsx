@@ -1,9 +1,11 @@
 /** 工具箱卡片（首页 3×3 网格单元） */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, shadow, tileThemes } from '../theme/theme';
+import { fontSize, radius, shadow } from '../theme/theme';
 import type { Tool } from '../types';
 import { ToolIcon } from './icons/ToolIcons';
+import { useThemedStyles, useTileThemes } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   tool: Tool;
@@ -11,6 +13,9 @@ interface Props {
 }
 
 export const ToolCard: React.FC<Props> = ({ tool, onPress }) => {
+  const styles = useThemedStyles(makeStyles);
+  const tileThemes = useTileThemes();
+
   const tile = tileThemes[tool.tile];
   const highlighted = Boolean(tool.hot);
 
@@ -42,7 +47,7 @@ export const ToolCard: React.FC<Props> = ({ tool, onPress }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: colors.card,

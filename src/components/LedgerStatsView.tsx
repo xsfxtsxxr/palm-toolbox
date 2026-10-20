@@ -4,7 +4,7 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   categoryBreakdown,
   filterRecords,
@@ -16,6 +16,8 @@ import {
 } from '../utils/ledger';
 import { fmtDecimal } from '../utils/format';
 import { MonthSwitcher } from './MonthSwitcher';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   records: LedgerRecord[];
@@ -33,6 +35,9 @@ const EXPENSE_COLOR = '#FB7B4B';
 const INCOME_COLOR = '#17B8A6';
 
 export const LedgerStatsView: React.FC<Props> = ({ records, month, onChangeMonth }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [breakdownType, setBreakdownType] = useState<LedgerType>('expense');
 
   const summary = useMemo(() => summarize(filterRecords(records, { month })), [records, month]);
@@ -59,7 +64,7 @@ export const LedgerStatsView: React.FC<Props> = ({ records, month, onChangeMonth
 
       {/* 结余 */}
       <LinearGradient
-        colors={['#E7F7F1', '#F2FBF7']}
+        colors={[colors.mintFrom, colors.mintTo]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.balanceCard}
@@ -228,7 +233,7 @@ const formatEmpty = (type: LedgerType, month: string) => {
   return `${year}年${Number(value)}月还没有${type === 'expense' ? '支出' : '收入'}记录`;
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xs,

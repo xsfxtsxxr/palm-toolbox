@@ -3,10 +3,12 @@
  */
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { DEPOSIT_RATE_PRESETS } from '../data/tools';
 import { fmtPercent, sanitizeRateInput } from '../utils/format';
 import { PickerModal } from './PickerModal';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -16,6 +18,9 @@ interface Props {
 }
 
 export const DepositRateModal: React.FC<Props> = ({ visible, rate, onClose, onConfirm }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const isPreset = DEPOSIT_RATE_PRESETS.some((item) => item.rate === rate);
   const [picked, setPicked] = useState(rate);
   const [custom, setCustom] = useState(isPreset ? '' : String(rate));
@@ -97,7 +102,7 @@ export const DepositRateModal: React.FC<Props> = ({ visible, rate, onClose, onCo
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   sectionHint: {
     fontSize: fontSize.mini,
     color: colors.textTertiary,

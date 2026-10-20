@@ -3,10 +3,12 @@
  */
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { RATE_PRESETS } from '../data/tools';
 import { fmtPercent } from '../utils/format';
 import { PickerModal } from './PickerModal';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -16,6 +18,9 @@ interface Props {
 }
 
 export const RatePickerModal: React.FC<Props> = ({ visible, rate, onClose, onConfirm }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [picked, setPicked] = useState(rate);
   const [custom, setCustom] = useState('');
 
@@ -84,7 +89,7 @@ export const RatePickerModal: React.FC<Props> = ({ visible, rate, onClose, onCon
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   CATEGORY_META,
   QUICK_PAIRS,
@@ -22,8 +22,11 @@ import {
 import { fmtDecimalInput, parseMoney } from '../utils/format';
 import { UnitPickerModal } from '../components/UnitPickerModal';
 import { InfoModal } from '../components/InfoModal';
+import { useCalcCommitOnLeave, useCalcDirty } from '../hooks/useCalcRecord';
 import { BackIcon, ChevronRightIcon, InfoIcon, SwapIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -49,6 +52,9 @@ const CALC_INFO =
   '换算结果按量级保留 2 - 6 位小数并去掉末尾 0，仅供日常参考。';
 
 export const UnitConverterScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
 
@@ -69,6 +75,14 @@ export const UnitConverterScreen: React.FC = () => {
   const rate = unitRate(category, from, to);
   const inverseRate = rate > 0 ? 1 / rate : 0;
 
+  // 实时换算：改过数值或单位后离开页面才算用了一次
+  const unitDirty = useCalcDirty(`${category}|${amountText}|${from}|${to}`);
+  useCalcCommitOnLeave(
+    'unit',
+    amount > 0 ? `${amountText} ${fromUnit.symbol} → ${toUnit.symbol}` : null,
+    unitDirty,
+  );
+
   const switchCategory = (next: UnitCategory) => {
     if (next === category) return;
     const meta = CATEGORY_META[next];
@@ -88,7 +102,7 @@ export const UnitConverterScreen: React.FC = () => {
   };
 
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable accessibilityRole="button" hitSlop={12} onPress={() => navigation.goBack()}>
           <BackIcon size={22} color={colors.textStrong} />
@@ -193,7 +207,7 @@ export const UnitConverterScreen: React.FC = () => {
 
         {/* 换算结果 */}
         <LinearGradient
-          colors={['#E7F7F1', '#F2FBF7']}
+          colors={[colors.mintFrom, colors.mintTo]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.resultCard}
@@ -291,7 +305,7 @@ export const UnitConverterScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -3,8 +3,10 @@
  */
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { formatDateLabel, parseQuickInput, priorityOf } from '../utils/todo';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   today: string;
@@ -14,6 +16,9 @@ interface Props {
 }
 
 export const TodoQuickAdd: React.FC<Props> = ({ today, onAdd, onDetail }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [text, setText] = useState('');
 
   const parsed = parseQuickInput(text, today);
@@ -74,7 +79,7 @@ export const TodoQuickAdd: React.FC<Props> = ({ today, onAdd, onDetail }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   wrap: {
     backgroundColor: colors.card,
     borderTopWidth: 1,

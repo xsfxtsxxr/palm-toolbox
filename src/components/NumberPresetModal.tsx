@@ -3,9 +3,11 @@
  */
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { sanitizeRateInput } from '../utils/format';
 import { PickerModal } from './PickerModal';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -35,6 +37,9 @@ export const NumberPresetModal: React.FC<Props> = ({
   onClose,
   onConfirm,
 }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const isPreset = presets.some((item) => item === value);
   const [picked, setPicked] = useState(value);
   const [custom, setCustom] = useState(isPreset ? '' : String(value));
@@ -116,7 +121,7 @@ export const NumberPresetModal: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   COMMON_CURRENCY_CODES,
   CURRENCIES,
@@ -31,6 +31,7 @@ import { loadFxRates } from '../utils/fxCache';
 import { fmtDecimal, fmtMoneyInput, parseMoney } from '../utils/format';
 import { CurrencyPickerModal } from '../components/CurrencyPickerModal';
 import { InfoModal } from '../components/InfoModal';
+import { useCalcCommitOnLeave, useCalcDirty } from '../hooks/useCalcRecord';
 import {
   AlertIcon,
   BackIcon,
@@ -40,6 +41,8 @@ import {
   SwapIcon,
 } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type PickerTarget = 'from' | 'to' | 'fromCommon' | 'toCommon' | null;
@@ -55,6 +58,9 @@ const CALC_INFO =
   '换算结果仅供参考，实际结汇 / 购汇价格以银行或支付机构实时报价为准。';
 
 export const CurrencyConverterScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
 
@@ -107,6 +113,10 @@ export const CurrencyConverterScreen: React.FC = () => {
   const inverseRate = rate > 0 ? 1 / rate : 0;
   const ready = !!rates && rate > 0;
 
+  // 实时换算：改过金额或币种后离开页面才算用了一次
+  const fxDirty = useCalcDirty(`${amountText}|${from}|${to}`);
+  useCalcCommitOnLeave('currency', ready ? `${amountText} ${from} → ${to}` : null, fxDirty);
+
   const swap = () => {
     setFrom(to);
     setTo(from);
@@ -125,7 +135,7 @@ export const CurrencyConverterScreen: React.FC = () => {
   const pickerVisible = picker !== null;
 
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable accessibilityRole="button" hitSlop={12} onPress={() => navigation.goBack()}>
           <BackIcon size={22} color={colors.textStrong} />
@@ -249,7 +259,7 @@ export const CurrencyConverterScreen: React.FC = () => {
 
         {/* 换算结果 */}
         <LinearGradient
-          colors={['#E7F7F1', '#F2FBF7']}
+          colors={[colors.mintFrom, colors.mintTo]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.resultCard}
@@ -349,7 +359,7 @@ export const CurrencyConverterScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-nati
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { AmortizationTable } from '../components/AmortizationTable';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { StatCard } from '../components/StatCard';
@@ -14,6 +14,8 @@ import { InfoModal } from '../components/InfoModal';
 import { BackIcon, ExportIcon, InfoIcon } from '../components/icons/UIIcons';
 import { useToast } from '../components/Toast';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'RepaymentPlan'>;
@@ -22,6 +24,9 @@ const PLAN_INFO =
   '还款计划基于「等额本息」法测算：提前还款后按剩余本金、原贷款利率与剩余期数重新计算月供与利息。\n\n· 月供本金 = 月供总额 − 月供利息；\n· 剩余总额 = 该期还完后尚未归还的本金；\n· 金额四舍五入至元，末期还款自动吸收尾差。\n\n数据仅供参考，实际以贷款合同与银行核算为准。';
 
 export const RepaymentPlanScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
   const insets = useSafeAreaInsets();
@@ -111,7 +116,7 @@ export const RepaymentPlanScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

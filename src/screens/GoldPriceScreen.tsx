@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   averageBrandPrice,
   averagePremium,
@@ -38,6 +38,8 @@ import {
   RefreshIcon,
 } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -78,6 +80,9 @@ function premiumLabel(premium: number): string {
 }
 
 export const GoldPriceScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
 
@@ -143,7 +148,7 @@ export const GoldPriceScreen: React.FC = () => {
   const updatedLabel = quote ? formatUpdated(quote.spot.updatedAt, quote.date) : '--';
 
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable accessibilityRole="button" hitSlop={12} onPress={() => navigation.goBack()}>
           <BackIcon size={22} color={colors.textStrong} />
@@ -215,7 +220,7 @@ export const GoldPriceScreen: React.FC = () => {
 
         {/* 主力合约卡 */}
         <LinearGradient
-          colors={['#E7F7F1', '#F2FBF7']}
+          colors={[colors.mintFrom, colors.mintTo]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.spotCard}
@@ -408,7 +413,7 @@ export const GoldPriceScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

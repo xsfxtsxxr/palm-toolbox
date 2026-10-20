@@ -3,11 +3,13 @@
  */
 import React, { useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { categoryOf, type LedgerRecord } from '../utils/ledger';
 import { fmtDecimal } from '../utils/format';
 import { ACTION_WIDTH, createSwipeRow } from './swipeRow';
 import { EditIcon, TrashIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   record: LedgerRecord;
@@ -17,6 +19,9 @@ interface Props {
 }
 
 export const LedgerRow: React.FC<Props> = ({ record, onPress, onEdit, onDelete }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [swipe] = useState(createSwipeRow);
   const { translateX, panHandlers } = swipe;
 
@@ -82,7 +87,7 @@ export const LedgerRow: React.FC<Props> = ({ record, onPress, onEdit, onDelete }
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   wrap: {
     height: 66,
     backgroundColor: colors.card,

@@ -1,9 +1,11 @@
 /** 年度扣税明细表：月份 / 本月扣税 / 累计扣税 / 到手工资 */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius } from '../theme/theme';
+import { fontSize, radius } from '../theme/theme';
 import { fmtDecimal, fmtMoney } from '../utils/format';
 import type { TaxResult } from '../utils/tax';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   result: TaxResult;
@@ -12,7 +14,9 @@ interface Props {
 const money = (value: number) =>
   Math.abs(value % 1) < 0.005 ? `¥${fmtMoney(value)}` : `¥${fmtDecimal(value, 2)}`;
 
-export const TaxTable: React.FC<Props> = ({ result }) => (
+export const TaxTable: React.FC<Props> = ({ result }) => {
+  const styles = useThemedStyles(makeStyles);
+  return (
   <View style={styles.table}>
     <View style={styles.headerRow}>
       <Text style={[styles.headerCell, styles.monthCol]}>月份</Text>
@@ -54,8 +58,9 @@ export const TaxTable: React.FC<Props> = ({ result }) => (
     </View>
   </View>
 );
+};
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   table: {
     borderRadius: radius.lg,
     overflow: 'hidden',

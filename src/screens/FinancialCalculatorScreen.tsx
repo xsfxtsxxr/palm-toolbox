@@ -14,14 +14,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import { WEALTH_ANNUAL_PRESETS, WEALTH_DAY_PRESETS, WEALTH_WANFEN_PRESETS } from '../data/tools';
 import { calcWealth, validateWealthInput, type WealthMode } from '../utils/wealth';
 import { fmtAmountInput, fmtYuanDecimal, parseAmount, sanitizeRateInput } from '../utils/format';
 import { NumberPresetModal } from '../components/NumberPresetModal';
 import { InfoModal } from '../components/InfoModal';
+import { useCalcCommitOnLeave, useCalcDirty } from '../hooks/useCalcRecord';
 import { AlertIcon, BackIcon, ChevronRightIcon, InfoIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -39,6 +42,9 @@ const CALC_INFO =
   '测算结果为估算值，实际收益以产品净值、万份收益变动与银行/平台结算规则为准。';
 
 export const FinancialCalculatorScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
 
@@ -68,8 +74,22 @@ export const FinancialCalculatorScreen: React.FC = () => {
 
   const isAnnual = mode === 'annualized';
 
+  // 实时计算：改动过参数后离开页面才算用了一次
+  const wealthDirty = useCalcDirty(
+    `${principalText}|${mode}|${annualText}|${wanfenText}|${days}`,
+  );
+  useCalcCommitOnLeave(
+    'financial',
+    hasInput && !error
+      ? isAnnual
+        ? `本金 ¥${principalText} · 七日年化 ${annualText}% · ${days}天`
+        : `本金 ¥${principalText} · 万份收益 ${wanfenText} · ${days}天`
+      : null,
+    wealthDirty,
+  );
+
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable accessibilityRole="button" hitSlop={12} onPress={() => navigation.goBack()}>
           <BackIcon size={22} color={colors.textStrong} />
@@ -198,7 +218,7 @@ export const FinancialCalculatorScreen: React.FC = () => {
 
         {/* 测算结果 */}
         <LinearGradient
-          colors={['#E7F7F1', '#F2FBF7']}
+          colors={[colors.mintFrom, colors.mintTo]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.resultCard}
@@ -298,7 +318,7 @@ export const FinancialCalculatorScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

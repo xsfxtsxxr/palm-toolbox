@@ -4,7 +4,9 @@
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -15,6 +17,8 @@ interface Props {
 }
 
 export const PickerModal: React.FC<Props> = ({ visible, title, onClose, children, footer }) => {
+  const styles = useThemedStyles(makeStyles);
+
   const insets = useSafeAreaInsets();
 
   return (
@@ -34,7 +38,7 @@ export const PickerModal: React.FC<Props> = ({ visible, title, onClose, children
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: colors.overlay,

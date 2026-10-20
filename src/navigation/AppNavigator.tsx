@@ -1,11 +1,11 @@
 /**
  * 应用导航：Stack（MainTabs + 计算器流程）+ BottomTabs（首页/统计/我的）
  */
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useMemo } from 'react';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { colors } from '../theme/theme';
+import { useTheme } from '../theme/ThemeContext';
 import { CustomTabBar } from './CustomTabBar';
 import { HomeScreen } from '../screens/HomeScreen';
 import { StatisticsScreen } from '../screens/StatisticsScreen';
@@ -24,6 +24,7 @@ import { TodoScreen } from '../screens/TodoScreen';
 import { TodoEditScreen } from '../screens/TodoEditScreen';
 import { TodoStatsScreen } from '../screens/TodoStatsScreen';
 import { GoldPriceScreen } from '../screens/GoldPriceScreen';
+import { CalcRecordsScreen } from '../screens/CalcRecordsScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -40,14 +41,34 @@ const TabNavigator: React.FC = () => (
   </Tab.Navigator>
 );
 
-export const AppNavigator: React.FC = () => (
-  <NavigationContainer>
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.background },
-      }}
-    >
+export const AppNavigator: React.FC = () => {
+  const { colors, scheme } = useTheme();
+
+  // 让导航容器本身的底色 / 卡片色跟随主题，避免转场时闪白
+  const navTheme = useMemo(() => {
+    const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        primary: colors.primary,
+        background: colors.background,
+        card: colors.card,
+        text: colors.text,
+        border: colors.border,
+        notification: colors.red,
+      },
+    };
+  }, [colors, scheme]);
+
+  return (
+    <NavigationContainer theme={navTheme}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       <Stack.Screen
         name="MortgageCalculator"
@@ -115,10 +136,16 @@ export const AppNavigator: React.FC = () => (
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen
+        name="CalcRecords"
+        component={CalcRecordsScreen}
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
         name="AllTools"
         component={AllToolsScreen}
         options={{ animation: 'slide_from_right' }}
       />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};

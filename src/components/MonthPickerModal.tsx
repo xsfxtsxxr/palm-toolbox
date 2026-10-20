@@ -3,9 +3,11 @@
  */
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize, radius, spacing } from '../theme/theme';
+import { fontSize, radius, spacing } from '../theme/theme';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons/UIIcons';
 import { PickerModal } from './PickerModal';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   visible: boolean;
@@ -36,6 +38,9 @@ export const MonthPickerModal: React.FC<Props> = ({
   minYear = 2015,
   maxYear = 2045,
 }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [pickedYear, setPickedYear] = useState(year);
   const [pickedMonth, setPickedMonth] = useState(month);
   const [pickedDay, setPickedDay] = useState(day);
@@ -131,7 +136,7 @@ export const MonthPickerModal: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   yearRow: {
     flexDirection: 'row',
     alignItems: 'center',

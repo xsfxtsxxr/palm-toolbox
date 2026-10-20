@@ -4,9 +4,11 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import type { TodoStats } from '../utils/todo';
 import { ChevronRightIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 const CHART_H = 96;
 
@@ -14,14 +16,17 @@ const CHART_H = 96;
 export const TodoDoneSummary: React.FC<{ stats: TodoStats; onPressDetail: () => void }> = ({
   stats,
   onPressDetail,
-}) => (
+}) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+  return (
   <Pressable
     accessibilityRole="button"
     style={({ pressed }) => [pressed && styles.pressed]}
     onPress={onPressDetail}
   >
     <LinearGradient
-      colors={['#E7F7F1', '#F2FBF7']}
+      colors={[colors.mintFrom, colors.mintTo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.summaryCard}
@@ -53,9 +58,13 @@ export const TodoDoneSummary: React.FC<{ stats: TodoStats; onPressDetail: () => 
     </LinearGradient>
   </Pressable>
 );
+};
 
 /** 统计页主体 */
 export const TodoStatsView: React.FC<{ stats: TodoStats }> = ({ stats }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const maxCount = Math.max(1, ...stats.daily.map((point) => point.count));
   const totalCategory = stats.byCategory.reduce((sum, item) => sum + item.done, 0);
 
@@ -166,7 +175,7 @@ export const TodoStatsView: React.FC<{ stats: TodoStats }> = ({ stats }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   pressed: {
     opacity: 0.9,
   },

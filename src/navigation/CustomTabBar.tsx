@@ -5,8 +5,10 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, shadow } from '../theme/theme';
+import { fontSize, shadow } from '../theme/theme';
 import { ChartTabIcon, HomeTabIcon, PersonTabIcon } from '../components/icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 const TAB_CONFIG: Record<string, { label: string; Icon: typeof HomeTabIcon }> = {
   Home: { label: '首页', Icon: HomeTabIcon },
@@ -15,6 +17,9 @@ const TAB_CONFIG: Record<string, { label: string; Icon: typeof HomeTabIcon }> = 
 };
 
 export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const insets = useSafeAreaInsets();
 
   return (
@@ -53,7 +58,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation })
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: colors.card,

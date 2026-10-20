@@ -7,16 +7,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, spacing } from '../theme/theme';
+import { fontSize, spacing } from '../theme/theme';
 import { todoStats, todayISO, type Todo } from '../utils/todo';
 import { readTodos } from '../utils/todoStorage';
 import { TodoStatsView } from '../components/TodoStatsView';
 import { BackIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export const TodoStatsScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
 
@@ -47,7 +52,7 @@ export const TodoStatsScreen: React.FC = () => {
         : `本周已完成 ${stats.weekDone} 项，继续加油`;
 
   return (
-    <LinearGradient colors={['#F7F9F8', '#EEF2F1']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable accessibilityRole="button" hitSlop={12} onPress={() => navigation.goBack()}>
           <BackIcon size={22} color={colors.textStrong} />
@@ -77,7 +82,7 @@ export const TodoStatsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

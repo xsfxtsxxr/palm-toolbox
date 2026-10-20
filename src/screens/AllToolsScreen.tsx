@@ -6,17 +6,23 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius, shadow, spacing, tileThemes } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import { TOOLS } from '../data/tools';
 import type { Tool } from '../types';
 import { useToast } from '../components/Toast';
 import { ToolIcon } from '../components/icons/ToolIcons';
 import { BackIcon, ChevronRightIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles, useTileThemes } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export const AllToolsScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+  const tileThemes = useTileThemes();
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -87,7 +93,7 @@ export const AllToolsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

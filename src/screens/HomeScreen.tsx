@@ -7,17 +7,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, shadow, spacing } from '../theme/theme';
+import { fontSize, shadow, spacing } from '../theme/theme';
 import { TOOLS } from '../data/tools';
 import type { Tool } from '../types';
 import { ToolCard } from '../components/ToolCard';
 import { useToast } from '../components/Toast';
 import { AvatarPersonIcon, CameraBadgeIcon, ChevronRightIcon } from '../components/icons/UIIcons';
 import type { RootStackParamList } from '../navigation/types';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export const HomeScreen: React.FC = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -53,7 +58,7 @@ export const HomeScreen: React.FC = () => {
   }
 
   return (
-    <LinearGradient colors={['#F7F9FD', '#EFF3F9']} style={styles.container}>
+    <LinearGradient colors={[colors.screenFrom, colors.screenTo]} style={styles.container}>
       <ScrollView
         contentContainerStyle={[
           styles.content,
@@ -102,7 +107,7 @@ export const HomeScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   container: {
     flex: 1,
   },

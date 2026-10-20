@@ -4,7 +4,9 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fontSize, radius } from '../theme/theme';
+import { fontSize, radius } from '../theme/theme';
+import { useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface ToastContextValue {
   showToast: (message: string) => void;
@@ -15,6 +17,8 @@ const ToastContext = createContext<ToastContextValue>({ showToast: () => {} });
 export const useToast = () => useContext(ToastContext);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const styles = useThemedStyles(makeStyles);
+
   const insets = useSafeAreaInsets();
   const [message, setMessage] = useState<string | null>(null);
   const [opacity] = useState(() => new Animated.Value(0));
@@ -59,7 +63,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: 0,

@@ -19,7 +19,8 @@
 | 待办清单 | ✅ 已上线 | 快捷添加（智能识别日期时间）、四类筛选、批量操作、完成统计与打卡 |
 | 金价查询 | ✅ 已上线 | 上海金 Au99.99 实时价、12 家品牌挂牌价与溢价、20 家银行金条、5 分钟缓存 |
 | 统计 | ✅ 已上线 | 计算汇总、最近一次测算、前 12 期本金/利息构成图 |
-| 我的 | ✅ 已上线 | 账号卡片、设置项（提醒开关 / 缓存 / 关于） |
+| 我的 | ✅ 已上线 | 计算次数统计（累计 / 今日 / 近 7 天 + 分工具明细）、夜间模式、清除缓存、关于 |
+| 计算记录 | ✅ 已上线 | 累计次数、近 7 天趋势柱状图、按工具看使用次数、一键清空 |
 | 全部工具 | ✅ 已上线 | 9 个工具清单与上线状态 |
 
 ## 快速开始
@@ -34,7 +35,7 @@ npm start
 # 类型检查
 npm run typecheck
 
-# 单元测试（房贷 + 存款 + 理财 + 个税 + 汇率缓存 + 单位换算 + 记账本 + 待办 + 金价，共 133 个用例）
+# 单元测试（房贷 + 存款 + 理财 + 个税 + 汇率缓存 + 单位换算 + 记账本 + 待办 + 金价 + 计算统计，共 153 个用例）
 npm test
 ```
 
@@ -61,7 +62,8 @@ palm-toolbox/
 ├── App.tsx                        # 根组件（Provider 组装）
 ├── app.json                       # Expo 配置（应用名 / 包名 / 图标）
 ├── src/
-│   ├── theme/theme.ts             # 设计规范（色彩 / 间距 / 圆角 / 字号 / 图标 Tile 配色）
+│   ├── theme/theme.ts             # 设计规范（浅色 / 深色两套调色板 + 间距 / 圆角 / 字号 / Tile 配色）
+│   ├── theme/ThemeContext.tsx     # 主题上下文（浅色 / 深色 / 跟随系统 + useThemedStyles）
 │   ├── types/index.ts             # 全局类型（Tool / MortgageInput / MortgageResult…）
 │   ├── data/tools.ts              # 9 个工具清单 + 利率/期数预设
 │   ├── utils/
@@ -88,9 +90,14 @@ palm-toolbox/
 │   │   ├── unit.test.ts           # 单位换算单元测试
 │   │   ├── ledger.test.ts         # 记账本模型与统计单元测试
 │   │   ├── todo.test.ts           # 待办模型 / 智能识别 / 统计单元测试
-│   │   └── gold.test.ts           # 金价解析 / 品牌过滤 / 溢价与涨跌单元测试
+│   │   ├── gold.test.ts           # 金价解析 / 品牌过滤 / 溢价与涨跌单元测试
+│   │   ├── calcStats.ts           # 计算次数统计（累计 / 每日 / 连续天数 / 工具占比）
+│   │   ├── calcStatsStorage.ts    # 计算次数本地存储（AsyncStorage: calc_stats）
+│   │   └── calcStats.test.ts      # 计算统计单元测试
 │   ├── hooks/useKeyboardHeight.ts  # 键盘高度监听（Android edge-to-edge 下底部栏避让）
-│   ├── context/CalculationContext.tsx   # 计算记录（统计页数据源）
+│   ├── hooks/useCalcRecord.ts      # 计算次数埋点（按钮型 / 实时型两套记录策略）
+│   ├── context/CalculationContext.tsx   # 房贷测算记录（统计页数据源）
+│   ├── context/CalcStatsContext.tsx     # 计算次数统计（全局 + 本地持久化）
 │   ├── components/
 │   │   ├── Toast.tsx              # 全局轻提示
 │   │   ├── PrimaryButton.tsx      # 主操作按钮
@@ -141,7 +148,8 @@ palm-toolbox/
 │       ├── TodoStatsScreen.tsx           # 待办统计
 │       ├── GoldPriceScreen.tsx           # 金价查询（上海金 + 品牌挂牌价 + 银行金条）
 │       ├── StatisticsScreen.tsx          # 统计页
-│       ├── ProfileScreen.tsx             # 我的
+│       ├── CalcRecordsScreen.tsx         # 计算记录（累计次数 / 近 7 天趋势 / 工具明细）
+│       ├── ProfileScreen.tsx             # 我的（计算次数速览 + 夜间模式）
 │       └── AllToolsScreen.tsx            # 全部工具
 └── docs/跨平台方案设计.md          # 跨平台技术方案文档
 ```
@@ -348,11 +356,49 @@ palm-toolbox/
 
 **免责**：品牌牌价不含工费，实际成交以门店为准；数据仅供参考，不构成投资建议。
 
+## 我的：计算次数与夜间模式
+
+### 计算次数
+
+「我的」页顶部的计算次数卡展示 **累计 / 今天 / 近 7 天**，点进去是完整的计算记录页。
+
+**什么算一次计算**，两种工具类型分开统计，避免虚增：
+
+| 工具类型 | 计入时机 |
+| --- | --- |
+| 按钮型（房贷、个税） | 每点一次「开始计算」记一次 |
+| 实时型（存款、理财、汇率、单位） | 改动过参数后**离开页面**记一次；只打开看看不算 |
+
+**存储**：AsyncStorage key `calc_stats`，结构为 `{ total, tools: { [kind]: { count, lastAt, lastSummary } }, days: { 'YYYY-MM-DD': n } }`，`days` 只保留最近 120 天。写入做了 400ms 防抖，连续操作不会频繁落盘；读取时逐字段校验，脏数据自动丢弃。
+
+**计算记录页**包含：
+
+- 累计次数大数字 + 今日 / 近 7 天 / 用过的工具数
+- 近 7 天柱状图（今天高亮），右上角显示与上周同期的环比
+- 按工具看列表：次数降序，显示最近使用时间与参数摘要（如「本金 ¥100000 · 1年0月0日 · 1.55%」），点击直达该工具
+- 一键清空（二次确认）
+
+### 夜间模式
+
+主题分三层：
+
+| 层 | 文件 | 职责 |
+| --- | --- | --- |
+| 调色板 | `src/theme/theme.ts` | `colors`（浅色）/ `darkColors`（深色）两套同构调色板，键名完全一致 |
+| 上下文 | `src/theme/ThemeContext.tsx` | `mode: light / dark / system`、`useThemeColors()`、`useThemedStyles()`，偏好存 AsyncStorage key `theme_mode` |
+| 消费 | 各页面 | `const colors = useThemeColors(); const styles = useThemedStyles(makeStyles);` |
+
+**为什么样式表要写成 `(colors) => StyleSheet.create(...)`**：RN 的样式对象在模块加载时就固化了颜色值，只有把样式表变成按调色板重新生成的函数，切换主题时才能整体换色。所有页面统一了这个写法。
+
+**历史硬编码色**：早期页面在局部手写了 `#F7F9F8`、`#2C3A36` 这类颜色，深色模式下由 `useThemedStyles` 按 `DARK_REMAP` 映射表统一改写（约 90 条），不必逐个文件返工。
+
+**范围**：默认「跟随系统」，也可在「我的 → 外观」里固定为浅色或深色；开关状态即时生效并持久化。`app.json` 的 `userInterfaceStyle` 已改为 `automatic`。
+
 ## 设计规范速览
 
-- 主色：深 Teal `#0D4A3D`（按钮 / 表头 / Tab 激活态）
+- 主色：深 Teal `#0D4A3D`（按钮 / 表头 / Tab 激活态）；深色模式下提亮为 `#2E9B7C`
 - 金额强调：蓝紫渐变 `#3E63F2 → #8A5CF6`（节省利息）
-- 背景：浅 Lavender 灰 `#F4F6FA`；卡片纯白 + 大圆角（16–24pt）
+- 背景：浅 Lavender 灰 `#F4F6FA`，深色模式改为 `#0B1210`；卡片纯白 + 大圆角（16–24pt）
 - 图标：全部为 SVG 矢量组件（`react-native-svg`），无位图资源依赖
 - 底部 Tab：首页 / 统计 / 我的
 

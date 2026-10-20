@@ -4,7 +4,7 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fontSize, radius, shadow, spacing } from '../theme/theme';
+import { fontSize, radius, shadow, spacing } from '../theme/theme';
 import {
   filterRecords,
   formatDateCN,
@@ -19,6 +19,8 @@ import { fmtDecimal } from '../utils/format';
 import { LedgerRow } from './LedgerRow';
 import { MonthSwitcher } from './MonthSwitcher';
 import { ExportIcon, PlusCircleIcon } from './icons/UIIcons';
+import { useThemeColors, useThemedStyles } from '../theme/ThemeContext';
+import type { Palette } from '../theme/theme';
 
 interface Props {
   records: LedgerRecord[];
@@ -45,6 +47,9 @@ export const LedgerListView: React.FC<Props> = ({
   onCreate,
   onExport,
 }) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(makeStyles);
+
   const [filter, setFilter] = useState<LedgerType | 'all'>('all');
 
   const monthRecords = useMemo(() => filterRecords(records, { month }), [records, month]);
@@ -63,7 +68,7 @@ export const LedgerListView: React.FC<Props> = ({
 
       {/* 当月汇总 */}
       <LinearGradient
-        colors={['#E7F7F1', '#F2FBF7']}
+        colors={[colors.mintFrom, colors.mintTo]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.summaryCard}
@@ -177,7 +182,7 @@ export const LedgerListView: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xs,
