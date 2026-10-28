@@ -7,13 +7,13 @@
     "icon": "./assets/icon.png",
     "scheme": "palmtoolbox",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.palmtoolbox.app"
     },
     "android": {
       "package": "com.palmtoolbox.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#023145",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -25,7 +25,19 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "buildArchs": [
+              "arm64-v8a"
+            ],
+            "enableMinifyInReleaseBuilds": true
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "ba62881c-2bdb-49e3-a510-32ce354fefad"

@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 构建产物：APK / AAB 通过 GitHub Releases 分发，不提交进仓库
+# （若确实需要入库，用 git add -f 显式覆盖）
+*.apk
+*.aab

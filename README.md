@@ -23,6 +23,35 @@
 | 计算记录 | ✅ 已上线 | 累计次数、近 7 天趋势柱状图、按工具看使用次数、一键清空 |
 | 全部工具 | ✅ 已上线 | 9 个工具清单与上线状态 |
 
+## 下载体验（Android）
+
+不想装开发环境？直接下载打包好的 APK 装到手机上就能用。
+
+**[⬇️ 下载最新版 APK](https://github.com/xsfxtsxxr/palm-toolbox/releases/latest)**
+
+| 项目 | 说明 |
+| --- | --- |
+| 应用名称 | 掌中工具箱 |
+| 版本 | v1.0.0（versionCode 1） |
+| 包名 | `com.palmtoolbox.app` |
+| 文件大小 | 约 26 MB |
+| 系统要求 | Android 7.0（API 24）及以上 |
+| 签名方式 | release 签名（APK Signature Scheme v2） |
+| SHA-256 | 2dd84c0e4d1991e10c970d804e5f7204da38520a9d5f8f679e8378200d35fbc3 |
+
+**安装步骤**
+
+1. 手机浏览器打开上方下载链接，下载 `palm-toolbox-v1.0.0.apk`；
+2. 点击安装。若系统提示「禁止安装未知来源应用」，在弹窗中允许浏览器 / 文件管理器安装应用后重试；
+3. 若出现「此应用未经 Play 保护机制检测」，选择「仍要安装」。
+
+**几点说明**
+
+- 这是 EAS `preview` 渠道构建的 **release 签名包**（非 debug 包），可以长期正常使用；但不经应用商店分发，Android 不会自动更新，有新版本需回到本页重新下载覆盖安装。
+- 覆盖安装要求 `versionCode` 递增、签名保持一致，满足条件时本地数据会保留；**卸载应用会清空全部本地数据**（记账、待办、计算记录均只存在手机本地，不上传服务器）。
+- 完整性校验：下载后与上表的 SHA-256 比对即可 —— Windows 用 PowerShell `Get-FileHash .\palm-toolbox-v1.0.0.apk -Algorithm SHA256`（或 `certutil -hashfile palm-toolbox-v1.0.0.apk SHA256`），macOS / Linux 用 `shasum -a 256`（或 `sha256sum`）。
+- iOS 没有可直接安装的包（需要 Apple 开发者账号签名），iOS 端请按下文「快速开始」用 Expo Go 或自行构建。
+
 ## 快速开始
 
 ```bash
@@ -54,6 +83,52 @@ npm run build:android:preview
 ```
 
 构建完成后，从终端输出或 Expo 构建页面下载 APK，在 Android 手机上打开安装；也可以连接已开启 USB 调试的手机，用 `adb install <APK路径>` 安装。首次安装时，Android 可能会要求允许该来源安装应用。
+
+> **关于分享构建链接**：`distribution: internal` 的构建页面默认对「拿到链接的人」开放（可在项目设置的 *Unauthenticated access to internal builds* 中关闭）。但 EAS 不承诺构建产物永久保存，通常会定期清理，且每条链接固定指向某一次构建。因此**长期对外分发请把 APK 上传到 GitHub Releases**，再把上方的下载链接保持为 `releases/latest`。
+
+#### 减小安装包体积
+
+APK 的体积几乎全在 `lib/` 里的原生库。默认对 4 个 ABI 各打一份（实测 79.8 MB 的包中，`lib/` 占 72.3 MB）：
+
+| ABI | 体积 | 说明 |
+| --- | --- | --- |
+| `x86` / `x86_64` | 20.4 / 19.7 MB | 只给模拟器用，真机完全用不到 |
+| `arm64-v8a` | 19.0 MB | 2016 年后的真机基本都是这个 |
+| `armeabi-v7a` | 13.3 MB | 老的 32 位机型 |
+
+`app.json` 已通过 `expo-build-properties` 插件只保留真机架构并开启 R8，产物从 **80 MB 降到约 25 MB**：
+
+```json
+"plugins": [
+  ["expo-build-properties", {
+    "android": {
+      "buildArchs": ["arm64-v8a"],
+      "enableMinifyInReleaseBuilds": true
+    }
+  }]
+]
+```
+
+按需调整：
+
+- 要兼容老 32 位机型 → `buildArchs` 加回 `"armeabi-v7a"`（约 39 MB）。
+- 要在本机模拟器上跑 → 临时加上 `"x86_64"`。
+- 还想再小 1 MB → 加 `"enableBundleCompression": true`，把 JS bundle 从 2.0 MB 压到约 0.9 MB，代价是启动略慢。
+- 继续抠资源 → 加 `"enableShrinkResourcesInReleaseBuilds": true`（必须与 minify 同开），可再去掉约 0.4 MB 未使用的 `res/` 资源；若遇到资源动态查找失效（RN 里偶发），先关掉这一项。
+
+#### 发布到 GitHub Releases 的检查清单
+
+每次重新构建后，包内的字节都会变（构建时间戳、签名块、对齐填充都不同），**SHA-256 一定会变**，所以这三处要一起改：
+
+```bash
+# 1. 算出新包的 SHA-256 与体积
+npm run apk:hash -- ~/Downloads/palm-toolbox-v1.0.0.apk
+
+# 2. 把输出的值填进上方「下载体验」表格的 SHA-256 与文件大小两行
+# 3. app.json 里 android.versionCode 递增（不设默认为 1），再构建下一个版本
+```
+
+校验的人只需在下载后对比一次：PowerShell `Get-FileHash .\xxx.apk -Algorithm SHA256`、Git Bash / macOS `sha256sum xxx.apk`（或 `shasum -a 256 xxx.apk`）、Windows 命令提示符 `certutil -hashfile xxx.apk SHA256`。
 
 ## 项目结构
 
