@@ -1,8 +1,8 @@
 /**
  * 金价查询：上海金 Au99.99 + 品牌金店挂牌价 + 银行投资金条
  *
- * 数据源：公开行情接口（tmini 聚合），缓存 5 分钟；
- * 请求失败回退上次缓存并提示「金价可能过期」
+ * 数据源：新浪财经（上金所现货）+ 公开零售报价（品牌金店 / 银行金条），两路独立请求；
+ * 缓存 5 分钟，失败回退上次缓存并明确标注「历史快照」，超过 24 小时的缓存直接丢弃。
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -44,12 +44,12 @@ import type { Palette } from '../theme/theme';
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 const HELP_TEXT =
-  '金价数据来自公开行情接口，一次请求同时取回上金所现货品种与各品牌金店挂牌价。\n\n' +
+  '金价数据来自公开行情接口：上金所现货行情取自新浪财经，品牌金店挂牌价与银行投资金条取自公开报价接口，两路分别获取，任一路失败不影响另一路。\n\n' +
   '· 上海金 Au99.99：上海黄金交易所黄金现货基准价，是国内金价的定价锚；\n' +
   '· 品牌金店挂牌价：周大福、老凤祥、周生生等门店当日足金零售牌价，右侧标注的是相对 Au99.99 的溢价；\n' +
   '· 银行投资金条：工行、建行等投资金条报价，通常最贴近基础金价。\n\n' +
   '涨跌以上海金当日今开价为基准计算（不是相对昨收）。品牌牌价不含工费，实际成交以门店为准。\n\n' +
-  '数据缓存 5 分钟，可下拉刷新或点右上角按钮强制更新；请求失败时会展示上次缓存并提示可能过期。';
+  '数据缓存 5 分钟，可下拉刷新或点右上角按钮强制更新；请求失败时会展示上次缓存并明确标注为「历史快照」；缓存超过 24 小时将不再展示，避免旧价误导。';
 
 /** 显示前 N 家银行，其余折叠 */
 const BANK_LIMIT = 5;
@@ -100,6 +100,9 @@ export const GoldPriceScreen: React.FC = () => {
     const result = await loadGoldQuote({ force });
     if (!alive.current) return;
     if (!result) {
+      // 没有可用报价时清空旧数据，避免上次的价格继续留在页面上冒充实时金价
+      setQuote(null);
+      setFetchedAt(0);
       setStatus('error');
       return;
     }
@@ -196,10 +199,10 @@ export const GoldPriceScreen: React.FC = () => {
           </View>
         ) : null}
         {status === 'stale' ? (
-          <View style={[styles.banner, styles.bannerWarn]}>
-            <AlertIcon size={14} color="#B7791F" />
-            <Text style={[styles.bannerText, styles.bannerTextWarn]}>
-              金价可能过期，当前为 {formatFetchedAt(fetchedAt)} 的缓存数据
+          <View style={[styles.banner, styles.bannerError]}>
+            <AlertIcon size={14} color={colors.red} />
+            <Text style={[styles.bannerText, styles.bannerTextError]}>
+              非实时行情：当前为 {formatFetchedAt(fetchedAt)} 的历史快照，请勿作为今日金价参考
             </Text>
             <Pressable accessibilityRole="button" hitSlop={8} onPress={() => void refresh()}>
               <Text style={styles.bannerAction}>重试</Text>
@@ -230,7 +233,10 @@ export const GoldPriceScreen: React.FC = () => {
               <Text style={styles.spotLabel}>上海金</Text>
               <Text style={styles.spotName}>Au99.99</Text>
             </View>
-            <Text style={styles.spotUnit}>元 / 克</Text>
+            <View style={styles.spotHeaderRight}>
+              {status === 'stale' ? <Text style={styles.staleBadge}>历史快照</Text> : null}
+              <Text style={styles.spotUnit}>元 / 克</Text>
+            </View>
           </View>
 
           <Text
@@ -399,7 +405,7 @@ export const GoldPriceScreen: React.FC = () => {
           <Text style={styles.footerText}>
             {quote ? `更新于 ${updatedLabel} · 报价日 ${quote.date}` : '等待金价数据'}
           </Text>
-          <Text style={styles.footerText}>数据来源：上海黄金交易所 / 各品牌金店公开报价</Text>
+          <Text style={styles.footerText}>数据来源：新浪财经（上金所行情）/ 品牌金店与银行公开报价</Text>
         </View>
       </ScrollView>
 
@@ -503,6 +509,21 @@ const makeStyles = (colors: Palette) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 6,
+  },
+  spotHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  staleBadge: {
+    fontSize: fontSize.mini,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    backgroundColor: colors.red,
+    borderRadius: radius.sm,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    overflow: 'hidden',
   },
   spotLabel: {
     fontSize: fontSize.title,

@@ -2,10 +2,14 @@
  * 金价本地缓存（对应 Web 端 localStorage 的 gold_quote）
  *
  * 流程：读缓存 → 5 分钟内直接用 → 过期则请求接口 → 成功写缓存
- * → 失败回退上次缓存并标记 stale（页面提示「金价可能过期」）
+ * → 失败回退上次缓存并标记 stale（页面提示「历史快照」）
+ * → 缓存超过 24 小时则彻底丢弃，绝不把几天前的旧价当成今日金价展示
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GOLD_CACHE_KEY, fetchGoldQuote, isGoldCacheFresh, type GoldQuote } from './gold';
+
+/** 缓存最长可用时长：超过一天就不再展示（金价日内波动，隔夜价已无参考意义） */
+export const GOLD_STALE_MAX_AGE = 24 * 60 * 60 * 1000;
 
 /** fresh：本次请求成功；cached：使用有效期内的缓存；stale：请求失败，回退过期缓存 */
 export type GoldSource = 'fresh' | 'cached' | 'stale';
@@ -75,6 +79,9 @@ export async function loadGoldQuote(
   }
 
   if (!cached) return null;
+  const age = now - cached.fetchedAt;
+  // 时间戳异常或缓存过旧：宁可显示「获取失败」，也不要把几周前的价格冒充实时金价
+  if (age < 0 || age >= GOLD_STALE_MAX_AGE) return null;
   return {
     quote: cached.quote,
     fetchedAt: cached.fetchedAt,
