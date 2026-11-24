@@ -133,6 +133,27 @@ npm run apk:hash -- ~/Downloads/palm-toolbox-v1.0.1.apk
 
 校验的人只需在下载后对比一次：PowerShell `Get-FileHash .\xxx.apk -Algorithm SHA256`、Git Bash / macOS `sha256sum xxx.apk`（或 `shasum -a 256 xxx.apk`）、Windows 命令提示符 `certutil -hashfile xxx.apk SHA256`。
 
+#### 创建 tag 并发布 GitHub Release
+
+构建并确认 APK、SHA-256 和文件大小后，再将版本信息提交并发布。以下以 `v1.0.1` 为例；后续版本需同步替换版本号，并确认 `app.json` 中 `expo.version` 与 Android `versionCode` 已更新。
+
+1. 更新 README 中的版本、APK 文件名、文件大小和 SHA-256，提交并推送发布所需的代码与文档：
+
+  ```bash
+  git add app.json README.md
+  git commit -m "Prepare release v1.0.1"
+  git push origin main
+  ```
+
+2. 在该提交上创建带注释的 tag 并推送到 GitHub。若仓库里已经有 `v1.0.1`，不要重复创建；应确认现有 tag 指向正确的发布提交：
+
+    ```bash
+    git tag -a v1.0.1 -m "Release v1.0.1"
+    git push origin v1.0.1
+    ```
+
+3. 打开 GitHub 仓库的 **Releases → Draft a new release**，选择刚推送的 `v1.0.1` tag，填写标题和更新说明，将构建好的 `palm-toolbox-v1.0.1.apk` 拖入附件区，然后点击 **Publish release**。发布后，README 中的 `releases/latest` 下载链接会指向这个最新版。
+
 ## 项目结构
 
 ```
